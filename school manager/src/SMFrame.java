@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.sql.DriverManager;
+import java.sql.Connection;
 
 public class SMFrame extends JFrame {
     JMenuBar mb = new JMenuBar();
@@ -48,6 +50,11 @@ public class SMFrame extends JFrame {
         help.add(about);
 
         add(mb);
+
+
+
+
+
 
 //        setJMenuBar(teach);
 //        teach.add(teacherMenu);
