@@ -9,7 +9,11 @@ public class sqlConnection {
 
     public sqlConnection(){
         Class.forName("com.mysql.jdbc.Driver");
-        Connection cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/akim_p6_school_manager","root","password");
+        this.connect  = DriverManager.getConnection("jdbc:mysql://localhost:3306/akim_p6_school_manager","root","password");
+    }
+    public void writeStatement(String statement){
+        Statement st = connect.createStatement();
+        st.execute(statement);
     }
 
 }

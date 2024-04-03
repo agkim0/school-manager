@@ -3,7 +3,10 @@ import java.sql.DriverManager;
 import java.sql.Connection;
 
 public class SMFrame extends JFrame {
-    JMenuBar mb = new JMenuBar();
+
+    private JMenuBar mb = new JMenuBar();
+
+    public static sqlConnection sql = new sqlConnection();
 
     JMenu file = new JMenu("File");
         JMenuItem exportItem = new JMenuItem("Export Data");
@@ -50,6 +53,37 @@ public class SMFrame extends JFrame {
         help.add(about);
 
         add(mb);
+
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
+                "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
+                "first_name TEXT NOT NULL," +
+                "last_name TEXT NOT NULL," +
+                " sections TEXT NOT NULL," +
+                "PRIMARY KEY(teacher_id)" +
+                ");");
+
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS students(" +
+                "student_id INTEGER NOT NULL AUTO_INCREMENT," +
+                "first_name TEXT NOT NULL," +
+                "last_name TEXT NOT NULL," +
+                "PRIMARY KEY(student_id");
+
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS courses(" +
+                "course_id INTEGER NOT NULL AUTO_INCREMENT," +
+                "name TEXT NOT NULL," +
+                "type TEXT NOT NULL," +
+                "PRIMARY KEY(course_id");
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO INCREMENT,"+
+                "course_id INTEGER NOT NULL,"+
+                "teacher_id INTEGER NOT NULL"+
+                "PRIMARY KEY(section id),"+
+                "FOREIGN KEY(course_id) REFERENCES courses(course_id) "+
+                "ON UPDATE CASCADE "+
+                "ON DELETE CASCADE,"+
+                "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE " +
+                "ON DELETE CASCADE" +
+                ");");
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS ");
 
 
 
