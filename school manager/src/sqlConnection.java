@@ -8,12 +8,23 @@ public class sqlConnection {
     private ResultSet resultSet = null;
 
     public sqlConnection(){
-        Class.forName("com.mysql.jdbc.Driver");
-        this.connect  = DriverManager.getConnection("jdbc:mysql://localhost:3306/akim_p6_school_manager","root","password");
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            this.connect  = DriverManager.getConnection("jdbc:mysql://localhost:3306/akim_p6_school_manager","root","password");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
     public void writeStatement(String statement){
-        Statement st = connect.createStatement();
-        st.execute(statement);
+        try{
+            Statement st = connect.createStatement();
+            st.execute(statement);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 }

@@ -66,36 +66,21 @@ public class SMFrame extends JFrame {
                 "student_id INTEGER NOT NULL AUTO_INCREMENT," +
                 "first_name TEXT NOT NULL," +
                 "last_name TEXT NOT NULL," +
-                "PRIMARY KEY(student_id");
+                "PRIMARY KEY(student_id));");
 
         sql.writeStatement("CREATE TABLE IF NOT EXISTS courses(" +
                 "course_id INTEGER NOT NULL AUTO_INCREMENT," +
                 "name TEXT NOT NULL," +
                 "type TEXT NOT NULL," +
-                "PRIMARY KEY(course_id");
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO INCREMENT,"+
+                "PRIMARY KEY(course_id));");
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO_INCREMENT,"+
                 "course_id INTEGER NOT NULL,"+
-                "teacher_id INTEGER NOT NULL"+
-                "PRIMARY KEY(section id),"+
+                "teacher_id INTEGER NOT NULL,"+
+                "PRIMARY KEY(section_id),"+
                 "FOREIGN KEY(course_id) REFERENCES courses(course_id) "+
                 "ON UPDATE CASCADE "+
                 "ON DELETE CASCADE,"+
-                "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE " +
-                "ON DELETE CASCADE" +
+                "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS ");
-
-
-
-
-
-
-//        setJMenuBar(teach);
-//        teach.add(teacherMenu);
-////        teach.setBounds(50,10,100,10);
-//        add(teach);
-//        teacherMenu.add(item);
-
-
     }
 }
