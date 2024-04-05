@@ -24,7 +24,17 @@ public class sqlConnection {
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
 
+    public ResultSet getRS(int ind, String table){
+        try{
+            Statement st = connect.createStatement();
+            ResultSet rs= st.executeQuery("SELECT "+ind+" FROM "+table+";");
+            return rs;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

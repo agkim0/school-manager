@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class SMFrame extends JFrame {
 
@@ -24,13 +26,13 @@ public class SMFrame extends JFrame {
     JMenu help = new JMenu("Help");
         JMenuItem about = new JMenuItem("About");
 
-
-
-
+    private JList teacherViewList = new JList<>();
+    private JLabel teacherViewText = new JLabel("Teachers");
+    private JScrollPane scroll = new JScrollPane(teacherViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     public SMFrame(){
         super("School Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700,700);
+        setSize(700,800);
         setResizable(true);
         setAlwaysOnTop(true);
         setVisible(true);
@@ -53,6 +55,11 @@ public class SMFrame extends JFrame {
         help.add(about);
 
         add(mb);
+
+        teacherViewText.setBounds(10,35,100,10);
+        add(teacherViewText);
+        scroll.setBounds(10,50,175,600);
+        add(scroll);
 
         sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
                 "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
@@ -82,5 +89,16 @@ public class SMFrame extends JFrame {
                 "ON DELETE CASCADE,"+
                 "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
+    }
+
+    public void teacherView(){
+        ArrayList<String> tname = new ArrayList<>();
+        teacherViewList.setVisible(true);
+        teacherViewText.setVisible(true);
+        ResultSet rs;
+        while(!rs.equals(null)){
+            tname.get
+        }
+
     }
 }
