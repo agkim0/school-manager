@@ -1,6 +1,8 @@
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.*;
+import java.util.ArrayList;
+
 public class sqlConnection {
     private Connection connect = null;
     private Statement statement = null;
@@ -26,11 +28,18 @@ public class sqlConnection {
         }
     }
 
-    public ResultSet getRS(int ind, String table){
+    public ArrayList<String> getList(String table){
+        ArrayList<String> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT "+ind+" FROM "+table+";");
-            return rs;
+            ResultSet rs= st.executeQuery("SELECT 1 FROM "+table+";");
+            while(!rs.equals(null)&&rs.next()){
+                try {
+                    list.add(rs.getString("last_name")+", "+rs.getString("first_name"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
