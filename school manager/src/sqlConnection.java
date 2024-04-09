@@ -32,7 +32,8 @@ public class sqlConnection {
         ArrayList<String> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT 1 FROM "+table+";");
+            ResultSet rs= st.executeQuery("SELECT * FROM "+table+";");
+            int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {
                     list.add(rs.getString("last_name")+", "+rs.getString("first_name"));
@@ -43,7 +44,7 @@ public class sqlConnection {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return null;
+        return list;
     }
 
 }
