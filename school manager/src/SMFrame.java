@@ -40,14 +40,14 @@ public class SMFrame extends JFrame {
     private JLabel idLabel = new JLabel("ID: ");
     private JLabel fnameLabel = new JLabel("First Name: ");
     private JLabel lnameLabel = new JLabel("Last Name: ");
+    private JButton saveChanges = new JButton("Save Changes");
 
     public SMFrame(){
         super("School Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(700,800);
         setResizable(true);
-        setAlwaysOnTop(true);
-        setVisible(true);
+//        setAlwaysOnTop(true);
         setLayout(null);
 
         setJMenuBar(mb);
@@ -68,9 +68,10 @@ public class SMFrame extends JFrame {
 
         add(mb);
 
-//        idLabel.setFont(labels);
-//        fnameLabel.setFont(labels);
-//        lnameLabel.setFont(labels);
+        idLabel.setFont(labels);
+        fnameLabel.setFont(labels);
+        lnameLabel.setFont(labels);
+        saveChanges.setFont(labels);
 
         //teacher view
         teacherViewText.setBounds(10,35,100,10);
@@ -84,8 +85,19 @@ public class SMFrame extends JFrame {
         teacherLN.setBounds(350,260,300,30);
         add(teacherLN);
 
-        idLabel.setBounds(150,100,100,30);
+        idLabel.setBounds(220,100,150,30);
         add(idLabel);
+        fnameLabel.setBounds(220,180,150,30);
+        add(fnameLabel);
+        lnameLabel.setBounds(220,260,150,30);
+        add(lnameLabel);
+
+        saveChanges.setBounds(220,500,200,30);
+        add(saveChanges);
+
+
+
+
 
 
 //        sql.writeStatement("DROP TABLE IF EXISTS section;");
@@ -123,14 +135,18 @@ public class SMFrame extends JFrame {
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
         teacherItem.addActionListener(e->{teacherView();});
 
+        setVisible(true);
     }
 
     public void teacherView(){
         sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
-        ArrayList<String> tname = sql.getList("teachers");
+        ArrayList<Teacher> tname = sql.getTeacherList();
         teacherViewList.setVisible(true);
         teacherViewText.setVisible(true);
         teacherViewList.setListData(tname.toArray());
+
+    }
+    public void selectedTeacher(){
 
     }
 }

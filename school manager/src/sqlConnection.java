@@ -28,15 +28,15 @@ public class sqlConnection {
         }
     }
 
-    public ArrayList<String> getList(String table){
-        ArrayList<String> list = new ArrayList<>();
+    public ArrayList<Teacher> getTeacherList(){
+        ArrayList<Teacher> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT * FROM "+table+";");
+            ResultSet rs= st.executeQuery("SELECT * FROM teachers;");
             int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {
-                    list.add(rs.getString("last_name")+", "+rs.getString("first_name"));
+                    list.add(new Teacher(rs.getInt("teacher_id"),rs.getString("last_name"),rs.getString("first_name")));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
