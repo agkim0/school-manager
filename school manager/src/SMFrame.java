@@ -12,6 +12,7 @@ import java.util.Map;
 public class SMFrame extends JFrame {
     private Font labels = new Font("Serif",Font.BOLD,20);
     private JMenuBar mb = new JMenuBar();
+    private String cview;
 
     public static sqlConnection sql = new sqlConnection();
 
@@ -84,6 +85,7 @@ public class SMFrame extends JFrame {
         add(teacherFN);
         teacherLN.setBounds(350,260,300,30);
         add(teacherLN);
+        teacherViewList.addListSelectionListener(e->{selectedTeacher();});
 
         idLabel.setBounds(220,100,150,30);
         add(idLabel);
@@ -94,6 +96,7 @@ public class SMFrame extends JFrame {
 
         saveChanges.setBounds(220,500,200,30);
         add(saveChanges);
+        saveChanges.addActionListener(e->{saveChanges(cview);});
 
 
 
@@ -139,7 +142,9 @@ public class SMFrame extends JFrame {
     }
 
     public void teacherView(){
-        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
+        saveChanges.setVisible(false);
+        cview = "teachers";
+//        sql.writeStatement("INSERT INTO teachers(first_name, last_name) VALUES('testfn','testln');");
         ArrayList<Teacher> tname = sql.getTeacherList();
         teacherViewList.setVisible(true);
         teacherViewText.setVisible(true);
@@ -147,6 +152,40 @@ public class SMFrame extends JFrame {
 
     }
     public void selectedTeacher(){
+        Teacher curr = (Teacher) teacherViewList.getSelectedValue();
+        if(curr==null){
+            teacherID.setText("");
+            teacherFN.setText("");
+            teacherLN.setText("");
+        }
+        else{
+            saveChanges.setVisible(true);
+            System.out.println("ID: "+curr.getId());
+            teacherID.setText(""+curr.getId());
+            teacherLN.setText(""+curr.getLn());
+            teacherFN.setText(""+curr.getFn());
+        }
+
+
+    }
+    public void saveChanges(String table){
+        if(table.equals("teachers")){
+            Teacher curr = (Teacher) teacherViewList.getSelectedValue();
+            curr.setFn(teacherFN.getText());
+            curr.setLn(teacherLN.getText());
+            sql.writeStatement("UPDATE teachers SET first_name='"+curr.getFn()+"' WHERE teacher_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE teachers SET last_name='"+curr.getLn()+"' WHERE teacher_id="+curr.getId()+";");
+            teacherView();
+        }
+
+    }
+    public void newEntry(){
+        teacherID.setText("");
+        teacherFN.setText("");
+        teacherLN.setText("");
+    }
+    public void saveEntry(){
+        sql.writeStatement("INSERT INTO teachers(first_name, last_name) VALUES('"+teacherFN.getText()+"','"+teacherLN.getText()+"');");
 
     }
 }

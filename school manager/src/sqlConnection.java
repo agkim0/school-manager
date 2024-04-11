@@ -36,7 +36,7 @@ public class sqlConnection {
             int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {
-                    list.add(new Teacher(rs.getInt("teacher_id"),rs.getString("last_name"),rs.getString("first_name")));
+                    list.add(new Teacher(rs.getInt("teacher_id"),rs.getString("first_name"),rs.getString("last_name")));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
