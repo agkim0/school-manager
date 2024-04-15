@@ -35,12 +35,24 @@ public class SMFrame extends JFrame {
     private JList teacherViewList = new JList<>();
     private JLabel teacherViewText = new JLabel("Teachers");
     private JScrollPane tscroll = new JScrollPane(teacherViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    private JTextField teacherID = new JTextField();
-    private JTextField teacherLN = new JTextField();
-    private JTextField teacherFN = new JTextField();
+    private JTextField id = new JTextField();
+    private JTextField ln = new JTextField();
+    private JTextField fn = new JTextField();
+    private JTextField cn = new JTextField();
+    private JList studentViewList = new JList();
+    private JLabel studentViewText = new JLabel("Students");
+    private JScrollPane sscroll = new JScrollPane(studentViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private JLabel idLabel = new JLabel("ID: ");
     private JLabel fnameLabel = new JLabel("First Name: ");
     private JLabel lnameLabel = new JLabel("Last Name: ");
+    private JLabel cnameLabel = new JLabel("Course Name: ");
+    private JLabel courseTypeLabel = new JLabel("Course Type: ");
+    private JLabel courseViewText = new JLabel("Courses");
+    private JList courseViewList = new JList();
+    private JScrollPane cscroll = new JScrollPane(courseViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private JRadioButton courseTypeAP = new JRadioButton("AP");
+    private JRadioButton courseTypeKAP = new JRadioButton("KAP");
+    private JRadioButton courseTypeACA = new JRadioButton("Academic");
     private JButton saveChanges = new JButton("Save Changes");
 
     public SMFrame(){
@@ -73,20 +85,15 @@ public class SMFrame extends JFrame {
         fnameLabel.setFont(labels);
         lnameLabel.setFont(labels);
         saveChanges.setFont(labels);
+        cnameLabel.setFont(labels);
+        courseTypeLabel.setFont(labels);
 
-        //teacher view
-        teacherViewText.setBounds(10,35,100,10);
-        add(teacherViewText);
-        tscroll.setBounds(10,50,175,600);
-        add(tscroll);
-        teacherID.setBounds(350,100,300,30);
-        add(teacherID);
-        teacherFN.setBounds(350,180,300,30);
-        add(teacherFN);
-        teacherLN.setBounds(350,260,300,30);
-        add(teacherLN);
-        teacherViewList.addListSelectionListener(e->{selectedTeacher();});
-
+        id.setBounds(350,100,300,30);
+        add(id);
+        fn.setBounds(350,180,300,30);
+        add(fn);
+        ln.setBounds(350,260,300,30);
+        add(ln);
         idLabel.setBounds(220,100,150,30);
         add(idLabel);
         fnameLabel.setBounds(220,180,150,30);
@@ -94,9 +101,44 @@ public class SMFrame extends JFrame {
         lnameLabel.setBounds(220,260,150,30);
         add(lnameLabel);
 
+        //teacher view
+        teacherViewText.setBounds(10,35,100,10);
+        add(teacherViewText);
+        tscroll.setBounds(10,50,175,600);
+        add(tscroll);
+        teacherViewList.addListSelectionListener(e->{selectedTeacher();});
+
+        //student view
+        studentViewText.setBounds(10,35,100,10);
+        add(studentViewText);
+        sscroll.setBounds(10,50,175,600);
+        add(sscroll);
+        studentViewList.addListSelectionListener(e->{selectedStudent();});
+
+        //course view
+        courseViewText.setBounds(10,35,100,10);
+        add(courseViewText);
+        cscroll.setBounds(10,50,175,600);
+        cnameLabel.setBounds(220,180,150,30);
+        add(cnameLabel);
+        cn.setBounds(350,180,300,30);
+        add(cn);
+        courseTypeLabel.setBounds(220,260,300,30);
+        add(courseTypeLabel);
+        courseTypeACA.setBounds(350,260,100,30);
+        add(courseTypeACA);
+        courseTypeKAP.setBounds(450,260,100,30);
+        add(courseTypeKAP);
+        courseTypeAP.setBounds(550,260,100,30);
+        add(courseTypeAP);
+        id.setVisible(true);
+        idLabel.setVisible(true);
+
+
+
         saveChanges.setBounds(220,500,200,30);
         add(saveChanges);
-        saveChanges.addActionListener(e->{saveChanges(cview);});
+        saveChanges.addActionListener(e->{saveChanges();});
 
 
 
@@ -137,55 +179,136 @@ public class SMFrame extends JFrame {
 
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
         teacherItem.addActionListener(e->{teacherView();});
+        studentItem.addActionListener(e->{studentView();});
 
         setVisible(true);
+        setAllVisibilityFalse();
+        id.setVisible(true);
+        idLabel.setVisible(true);
+//        teacherView();
+    }
+
+    public void setAllVisibilityFalse(){
+        id.setVisible(false);
+        fn.setVisible(false);
+        ln.setVisible(false);
+        idLabel.setVisible(false);
+        fnameLabel.setVisible(false);
+        lnameLabel.setVisible(false);
+        teacherViewList.setVisible(false);
+        teacherViewText.setVisible(false);
+        tscroll.setVisible(false);
+        studentViewList.setVisible(false);
+        studentViewText.setVisible(false);
+        sscroll.setVisible(false);
+
     }
 
     public void teacherView(){
+        setAllVisibilityFalse();
         saveChanges.setVisible(false);
         cview = "teachers";
+        id.setVisible(true);
+        fn.setVisible(true);
+        ln.setVisible(true);
+        idLabel.setVisible(true);
+        fnameLabel.setVisible(true);
+        lnameLabel.setVisible(true);
+        tscroll.setVisible(true);
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name) VALUES('testfn','testln');");
-        ArrayList<Teacher> tname = sql.getTeacherList();
         teacherViewList.setVisible(true);
         teacherViewText.setVisible(true);
-        teacherViewList.setListData(tname.toArray());
+        teacherViewList.setListData(sql.getTeacherList().toArray());
 
     }
     public void selectedTeacher(){
         Teacher curr = (Teacher) teacherViewList.getSelectedValue();
         if(curr==null){
-            teacherID.setText("");
-            teacherFN.setText("");
-            teacherLN.setText("");
+            id.setText("");
+            fn.setText("");
+            ln.setText("");
         }
         else{
             saveChanges.setVisible(true);
             System.out.println("ID: "+curr.getId());
-            teacherID.setText(""+curr.getId());
-            teacherLN.setText(""+curr.getLn());
-            teacherFN.setText(""+curr.getFn());
+            id.setText(""+curr.getId());
+            ln.setText(""+curr.getLn());
+            fn.setText(""+curr.getFn());
         }
-
+    }
+    public void studentView(){
+        setAllVisibilityFalse();
+        saveChanges.setVisible(false);
+        cview = "students";
+        id.setVisible(true);
+        fn.setVisible(true);
+        ln.setVisible(true);
+        idLabel.setVisible(true);
+        fnameLabel.setVisible(true);
+        lnameLabel.setVisible(true);
+        sscroll.setVisible(true);
+        studentViewList.setVisible(true);
+        studentViewText.setVisible(true);
+        studentViewList.setListData(sql.getStudentList().toArray());
 
     }
-    public void saveChanges(String table){
-        if(table.equals("teachers")){
+    public void selectedStudent(){
+        Student curr = (Student) studentViewList.getSelectedValue();
+        if(curr==null){
+            id.setText("");
+            fn.setText("");
+            ln.setText("");
+        }
+        else{
+            saveChanges.setVisible(true);
+            System.out.println("ID: "+curr.getId());
+            id.setText(""+curr.getId());
+            ln.setText(""+curr.getLn());
+            fn.setText(""+curr.getFn());
+        }
+    }
+    public void courseView(){
+        setAllVisibilityFalse();
+        saveChanges.setVisible(false);
+        cview = "students";
+        id.setVisible(true);
+        cnameLabel.setVisible(true);
+        cn.setVisible(true);
+        idLabel.setVisible(true);
+        courseTypeLabel.setVisible(true);
+        courseTypeKAP.setVisible(true);
+        cscroll.setVisible(true);
+        courseViewList.setVisible(true);
+        courseViewText.setVisible(true);
+        courseViewList.setListData(sql.getStudentList().toArray());
+
+    }
+    public void saveChanges(){
+        if(cview.equals("teachers")){
             Teacher curr = (Teacher) teacherViewList.getSelectedValue();
-            curr.setFn(teacherFN.getText());
-            curr.setLn(teacherLN.getText());
+            curr.setFn(fn.getText());
+            curr.setLn(ln.getText());
             sql.writeStatement("UPDATE teachers SET first_name='"+curr.getFn()+"' WHERE teacher_id="+curr.getId()+";");
             sql.writeStatement("UPDATE teachers SET last_name='"+curr.getLn()+"' WHERE teacher_id="+curr.getId()+";");
+            teacherView();
+        }
+        else if(cview.equals("students")){
+            Student curr = (Student) studentViewList.getSelectedValue();
+            curr.setFn(fn.getText());
+            curr.setLn(ln.getText());
+            sql.writeStatement("UPDATE students SET first_name='"+curr.getFn()+"' WHERE student_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE students SET last_name='"+curr.getLn()+"' WHERE student_id="+curr.getId()+";");
             teacherView();
         }
 
     }
     public void newEntry(){
-        teacherID.setText("");
-        teacherFN.setText("");
-        teacherLN.setText("");
+        id.setText("");
+        fn.setText("");
+        ln.setText("");
     }
     public void saveEntry(){
-        sql.writeStatement("INSERT INTO teachers(first_name, last_name) VALUES('"+teacherFN.getText()+"','"+teacherLN.getText()+"');");
+        sql.writeStatement("INSERT INTO teachers(first_name, last_name) VALUES('"+fn.getText()+"','"+fn.getText()+"');");
 
     }
 }

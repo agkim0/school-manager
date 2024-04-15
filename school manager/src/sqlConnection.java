@@ -47,4 +47,41 @@ public class sqlConnection {
         return list;
     }
 
+    public ArrayList<Student> getStudentList(){
+        ArrayList<Student> list = new ArrayList<>();
+        try{
+            Statement st = connect.createStatement();
+            ResultSet rs= st.executeQuery("SELECT * FROM students;");
+            int i = 1;
+            while(!rs.equals(null)&&rs.next()){
+                try {
+                    list.add(new Student(rs.getInt("student_id"),rs.getString("first_name"),rs.getString("last_name")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<Course> getCourseList(){
+        ArrayList<Course> list = new ArrayList<>();
+        try{
+            Statement st = connect.createStatement();
+            ResultSet rs= st.executeQuery("SELECT * FROM courses;");
+            int i = 1;
+            while(!rs.equals(null)&&rs.next()){
+                try {
+                    list.add(new Course(rs.getInt("course_id"),rs.getString("name"),rs.getString("type")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
