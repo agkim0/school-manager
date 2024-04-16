@@ -32,4 +32,8 @@ public class Student {
     public void setLn(String ln) {
         this.ln = ln;
     }
+
+    public String toString() {
+        return fn+" "+ln;
+    }
 }

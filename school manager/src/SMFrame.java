@@ -151,7 +151,7 @@ public class SMFrame extends JFrame {
         newEntry.addActionListener(e->{newEntry();});
         deleteEntry.setBounds(220,540,200,30);
         add(deleteEntry);
-        deleteEntry.addActionListener(e->{newEntry();});
+        deleteEntry.addActionListener(e->{deleteEntry();});
 
 
 
@@ -222,6 +222,7 @@ public class SMFrame extends JFrame {
         studentViewText.setVisible(false);
         sscroll.setVisible(false);
 
+        cn.setVisible(false);
         courseViewList.setVisible(false);
         courseViewText.setVisible(false);
         courseTypeACA.setVisible(false);
@@ -344,6 +345,24 @@ public class SMFrame extends JFrame {
             sql.writeStatement("UPDATE students SET last_name='"+curr.getLn()+"' WHERE student_id="+curr.getId()+";");
             studentView();
         }
+        else if(cview.equals("courses")){
+            Course curr = (Course) courseViewList.getSelectedValue();
+            curr.setCn(cn.getText());
+            if(courseTypeACA.isSelected()){
+                curr.setType(0);
+            }
+            else if(courseTypeKAP.isSelected()){
+                curr.setType(1);
+            }
+            else if(courseTypeAP.isSelected()){
+                curr.setType(2);
+            }
+            sql.writeStatement("UPDATE students SET name='"+curr.getCn()+"' WHERE course_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE students SET type='"+curr.getType()+"' WHERE course_id="+curr.getId()+";");
+            courseView();
+
+
+        }
     }
     public void newEntry(){
         id.setText("");
@@ -378,6 +397,16 @@ public class SMFrame extends JFrame {
 
         }
 
+    }
+    public void deleteEntry(){
+        if(cview.equals("teachers")){
+            sql.writeStatement("DELETE FROM teachers WHERE teacher_id="+id.getText());
+            teacherView();
+        }
+        else if(cview.equals("students")){
+            sql.writeStatement("DELETE FROM students WHERE student_id="+id.getText());
+            studentView();
+        }
     }
     public void courseTypeButtons(String select){
         if(select.equals("ACA")){

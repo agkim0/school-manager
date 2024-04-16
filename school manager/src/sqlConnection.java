@@ -74,7 +74,7 @@ public class sqlConnection {
             int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {
-                    list.add(new Course(rs.getInt("course_id"),rs.getString("name"),rs.getString("type")));
+                    list.add(new Course(rs.getInt("course_id"),rs.getString("name"),rs.getInt("type")));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
