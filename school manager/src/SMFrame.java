@@ -53,9 +53,18 @@ public class SMFrame extends JFrame {
     private JRadioButton courseTypeAP = new JRadioButton("AP");
     private JRadioButton courseTypeKAP = new JRadioButton("KAP");
     private JRadioButton courseTypeACA = new JRadioButton("Academic");
-    private JLabel sectionsViewText = new JLabel("Sections");
+    private JLabel sectionsViewText = new JLabel("Sections for Course:");
     private JList sectionsViewList = new JList();
     private JScrollPane secscroll = new JScrollPane(sectionsViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private JComboBox<Course> courseBox = new JComboBox<Course>();
+    private JComboBox<Teacher> teacherBox = new JComboBox<>();
+    private JButton removeTeacher = new JButton("Remove Teacher");
+    private JButton newTeacher = new JButton("Add Teacher");
+    private JButton saveTeacher = new JButton("Save Teacher");
+    private JLabel teachersInSecLabel = new JLabel("Teacher: ");
+    private JLabel sectIDLabel = new JLabel("Section ID: ");
+
+
     private JButton saveChanges = new JButton("Save Changes");
     private JButton saveEntry = new JButton("Save Entry");
     private JButton newEntry = new JButton("New Entry");
@@ -140,6 +149,26 @@ public class SMFrame extends JFrame {
         add(courseTypeAP);
         courseViewList.addListSelectionListener(e->{selectedCourse();});
 
+        //sections view
+        sectionsViewText.setBounds(10,35,230,10);
+        add(sectionsViewText);
+        secscroll.setBounds(10,50,175,600);
+        add(secscroll);
+        courseBox.setBounds(550,30,120,20);
+        add(courseBox);
+        ArrayList<Course> c = sql.getCourseList();
+        for(int i = 0; i<c.size();i++){
+            courseBox.addItem(c.get(i));
+        }
+        sectIDLabel.setBounds(375,35,150,10);
+        add(sectIDLabel);
+        teachersInSecLabel.setBounds(220,50,150,30);
+        add(teachersInSecLabel);
+        teacherBox.setBounds(320,50,120,20);
+
+
+
+
         id.setVisible(true);
         idLabel.setVisible(true);
 
@@ -214,8 +243,10 @@ public class SMFrame extends JFrame {
         setAllVisibilityFalse();
         id.setVisible(true);
         idLabel.setVisible(true);
-        teacherView();
+        setAllVisibilityFalse();
     }
+
+
 
     public void setAllVisibilityFalse(){
         id.setVisible(false);
@@ -246,6 +277,7 @@ public class SMFrame extends JFrame {
         saveEntry.setVisible(false);
         saveChanges.setVisible(false);
         newEntry.setVisible(false);
+        deleteEntry.setVisible(false);
 
 
 
