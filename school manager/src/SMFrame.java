@@ -53,6 +53,9 @@ public class SMFrame extends JFrame {
     private JRadioButton courseTypeAP = new JRadioButton("AP");
     private JRadioButton courseTypeKAP = new JRadioButton("KAP");
     private JRadioButton courseTypeACA = new JRadioButton("Academic");
+    private JLabel sectionsViewText = new JLabel("Sections");
+    private JList sectionsViewList = new JList();
+    private JScrollPane secscroll = new JScrollPane(sectionsViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private JButton saveChanges = new JButton("Save Changes");
     private JButton saveEntry = new JButton("Save Entry");
     private JButton newEntry = new JButton("New Entry");
@@ -87,7 +90,7 @@ public class SMFrame extends JFrame {
         idLabel.setFont(labels);
         fnameLabel.setFont(labels);
         lnameLabel.setFont(labels);
-        saveChanges.setFont(labels);
+//        saveChanges.setFont(labels);
         cnameLabel.setFont(labels);
         courseTypeLabel.setFont(labels);
 
@@ -135,6 +138,8 @@ public class SMFrame extends JFrame {
         add(courseTypeKAP);
         courseTypeAP.setBounds(550,260,100,30);
         add(courseTypeAP);
+        courseViewList.addListSelectionListener(e->{selectedCourse();});
+
         id.setVisible(true);
         idLabel.setVisible(true);
 
@@ -189,6 +194,12 @@ public class SMFrame extends JFrame {
                 "ON UPDATE CASCADE "+
                 "ON DELETE CASCADE,"+
                 "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                ");");
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS enrollment(section_id INTEGER NOT NULL, " +
+                "student_id INTEGER NOT NULL, " +
+                "PRIMARY KEY(section_id,student_id), " +
+                "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
+                "FOREIGN KEY(student_id) REFERENCES student(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
 
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
@@ -312,7 +323,7 @@ public class SMFrame extends JFrame {
     public void courseView(){
         setAllVisibilityFalse();
         saveChanges.setVisible(false);
-        cview = "students";
+        cview = "courses";
         id.setVisible(true);
         cnameLabel.setVisible(true);
         cn.setVisible(true);
@@ -324,9 +335,42 @@ public class SMFrame extends JFrame {
         cscroll.setVisible(true);
         courseViewList.setVisible(true);
         courseViewText.setVisible(true);
-        courseViewList.setListData(sql.getStudentList().toArray());
+        courseViewList.setListData(sql.getCourseList().toArray());
         newEntry();
+    }
+    public void sectionView(){
 
+    }
+
+    public void selectedCourse(){
+        Course curr = (Course) courseViewList.getSelectedValue();
+        if(curr==null){
+            id.setText("");
+            cn.setText("");
+            courseTypeACA.setSelected(false);
+            courseTypeKAP.setSelected(false);
+            courseTypeAP.setSelected(false);
+        }
+        else{
+            saveChanges.setVisible(true);
+            saveEntry.setVisible(false);
+            deleteEntry.setVisible(true);
+            System.out.println("ID: "+curr.getId());
+            id.setText(""+curr.getId());
+            cn.setText(""+curr.getCn());
+            courseTypeACA.setSelected(false);
+            courseTypeKAP.setSelected(false);
+            courseTypeAP.setSelected(false);
+            if(curr.getType()==0){
+                courseTypeACA.setSelected(true);
+            }
+            else if(curr.getType()==1){
+                courseTypeKAP.setSelected(true);
+            }
+            else if(curr.getType()==2){
+                courseTypeAP.setSelected(true);
+            }
+        }
     }
     public void saveChanges(){
         if(cview.equals("teachers")){
@@ -357,8 +401,8 @@ public class SMFrame extends JFrame {
             else if(courseTypeAP.isSelected()){
                 curr.setType(2);
             }
-            sql.writeStatement("UPDATE students SET name='"+curr.getCn()+"' WHERE course_id="+curr.getId()+";");
-            sql.writeStatement("UPDATE students SET type='"+curr.getType()+"' WHERE course_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE courses SET name='"+curr.getCn()+"' WHERE course_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE courses SET type='"+curr.getType()+"' WHERE course_id="+curr.getId()+";");
             courseView();
 
 
@@ -368,6 +412,10 @@ public class SMFrame extends JFrame {
         id.setText("");
         fn.setText("");
         ln.setText("");
+        cn.setText("");
+        courseTypeACA.setSelected(false);
+        courseTypeKAP.setSelected(false);
+        courseTypeAP.setSelected(false);
         newEntry.setVisible(true);
         saveEntry.setVisible(true);
         deleteEntry.setVisible(false);
@@ -394,7 +442,7 @@ public class SMFrame extends JFrame {
                 i=2;
             }
             sql.writeStatement("INSERT INTO courses(name,type) VALUES('"+cn.getText()+"','"+i+"');");
-
+            courseView();
         }
 
     }

@@ -45,6 +45,6 @@ public class Course {
         if(type==2){
             t="AP";
         }
-        return t+""+cn;
+        return t+" "+cn;
     }
 }
