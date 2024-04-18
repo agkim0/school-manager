@@ -84,4 +84,25 @@ public class sqlConnection {
         }
         return list;
     }
+
+    public ArrayList<Section> getSectionList(Course c){
+        ArrayList<Section> list = new ArrayList<>();
+        try{
+            Statement st = connect.createStatement();
+            ResultSet rs= st.executeQuery("SELECT * FROM sections;");
+            int i = 1;
+            while(!rs.equals(null)&&rs.next()){
+                try {
+                    if(rs.getInt("course_id")==c.getId()){
+                        list.add(new Section(rs.getInt("section_id"),rs.getInt("course_id"),rs.getInt("teacher_id")));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

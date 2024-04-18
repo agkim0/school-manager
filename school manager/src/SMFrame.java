@@ -63,7 +63,8 @@ public class SMFrame extends JFrame {
     private JButton saveTeacher = new JButton("Save Teacher");
     private JLabel teachersInSecLabel = new JLabel("Teacher: ");
     private JLabel sectIDLabel = new JLabel("Section ID: ");
-
+    private JTable studentSectTable = new JTable();
+    private JScrollPane stusectscroll = new JScrollPane(studentSectTable,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
     private JButton saveChanges = new JButton("Save Changes");
     private JButton saveEntry = new JButton("Save Entry");
@@ -102,6 +103,7 @@ public class SMFrame extends JFrame {
 //        saveChanges.setFont(labels);
         cnameLabel.setFont(labels);
         courseTypeLabel.setFont(labels);
+        teachersInSecLabel.setFont(labels);
 
         id.setBounds(350,100,300,30);
         add(id);
@@ -164,7 +166,11 @@ public class SMFrame extends JFrame {
         add(sectIDLabel);
         teachersInSecLabel.setBounds(220,50,150,30);
         add(teachersInSecLabel);
-        teacherBox.setBounds(320,50,120,20);
+        teacherBox.setBounds(320,55,120,20);
+        add(teacherBox);
+        stusectscroll.setBounds(220,350,400,300);
+        add(stusectscroll);
+
 
 
 
@@ -244,6 +250,7 @@ public class SMFrame extends JFrame {
         id.setVisible(true);
         idLabel.setVisible(true);
         setAllVisibilityFalse();
+        sectionView();
     }
 
 
@@ -274,13 +281,18 @@ public class SMFrame extends JFrame {
         cnameLabel.setVisible(false);
         cscroll.setVisible(false);
 
+        sectionsViewText.setVisible(false);
+        secscroll.setVisible(false);
+        teachersInSecLabel.setVisible(false);
+        teacherBox.setVisible(false);
+        sectIDLabel.setVisible(false);
+        courseBox.setVisible(false);
+        stusectscroll.setVisible(false);
+
         saveEntry.setVisible(false);
         saveChanges.setVisible(false);
         newEntry.setVisible(false);
         deleteEntry.setVisible(false);
-
-
-
     }
 
     public void teacherView(){
@@ -371,7 +383,24 @@ public class SMFrame extends JFrame {
         newEntry();
     }
     public void sectionView(){
+        id.setVisible(true);
+        fn.setVisible(true);
+        ln.setVisible(true);
+        idLabel.setVisible(true);
+        fnameLabel.setVisible(true);
+        lnameLabel.setVisible(true);
+        secscroll.setVisible(true);
+        stusectscroll.setVisible(true);
+        teacherBox.setVisible(true);
+        teachersInSecLabel.setVisible(true);
+        courseBox.setVisible(true);
+        sectIDLabel.setVisible(true);
+        sectionsViewText.setVisible(true);
 
+        sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+    }
+    public void selectedSection(){
+        teacherBox
     }
 
     public void selectedCourse(){
