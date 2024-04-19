@@ -89,7 +89,7 @@ public class sqlConnection {
         ArrayList<Section> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT * FROM sections;");
+            ResultSet rs= st.executeQuery("SELECT * FROM section;");
             int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {

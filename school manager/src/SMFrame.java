@@ -58,14 +58,16 @@ public class SMFrame extends JFrame {
     private JScrollPane secscroll = new JScrollPane(sectionsViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private JComboBox<Course> courseBox = new JComboBox<Course>();
     private JComboBox<Teacher> teacherBox = new JComboBox<>();
-    private JButton removeTeacher = new JButton("Remove Teacher");
-    private JButton newTeacher = new JButton("Add Teacher");
-    private JButton saveTeacher = new JButton("Save Teacher");
     private JLabel teachersInSecLabel = new JLabel("Teacher: ");
-    private JLabel sectIDLabel = new JLabel("Section ID: ");
-    private JTable studentSectTable = new JTable();
-    private JScrollPane stusectscroll = new JScrollPane(studentSectTable,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
+    private JLabel courseSectLabel = new JLabel("Course: ");
+    private JLabel studentsNotInSecLable = new JLabel("Not in Section");
+    private JLabel studentsInSecLable = new JLabel("In Section");
+    private JList studentsNotInSecList = new JList<>();
+    private JList studentsInSecList = new JList<>();
+    private JScrollPane stuNotSecscroll = new JScrollPane(studentsNotInSecList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private JScrollPane stusectscroll = new JScrollPane(studentsInSecList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private JButton moveStudentLeft = new JButton("<");
+    private JButton moveStudentRight = new JButton(">");
     private JButton saveChanges = new JButton("Save Changes");
     private JButton saveEntry = new JButton("Save Entry");
     private JButton newEntry = new JButton("New Entry");
@@ -104,6 +106,7 @@ public class SMFrame extends JFrame {
         cnameLabel.setFont(labels);
         courseTypeLabel.setFont(labels);
         teachersInSecLabel.setFont(labels);
+        courseSectLabel.setFont(labels);
 
         id.setBounds(350,100,300,30);
         add(id);
@@ -156,21 +159,31 @@ public class SMFrame extends JFrame {
         add(sectionsViewText);
         secscroll.setBounds(10,50,175,600);
         add(secscroll);
-        courseBox.setBounds(550,30,120,20);
+        courseBox.setBounds(350,30,300,30);
         add(courseBox);
         ArrayList<Course> c = sql.getCourseList();
         for(int i = 0; i<c.size();i++){
             courseBox.addItem(c.get(i));
         }
-        sectIDLabel.setBounds(375,35,150,10);
-        add(sectIDLabel);
-        teachersInSecLabel.setBounds(220,50,150,30);
+        courseSectLabel.setBounds(220,30,150,30);
+        add(courseSectLabel);
+        teachersInSecLabel.setBounds(220,180,150,30);
         add(teachersInSecLabel);
-        teacherBox.setBounds(320,55,120,20);
+        teacherBox.setBounds(350,180,300,30);
         add(teacherBox);
-        stusectscroll.setBounds(220,350,400,300);
+        stuNotSecscroll.setBounds(220,350,150,300);
+        add(stuNotSecscroll);
+        stusectscroll.setBounds(490,350,150,300);
         add(stusectscroll);
-
+        studentsNotInSecLable.setBounds(220,330, 100,20);
+        add(studentsNotInSecLable);
+        studentsInSecLable.setBounds(490,330, 100,20);
+        add(studentsInSecLable);
+        moveStudentLeft.setBounds(380,470,100,40);
+        add(moveStudentLeft);
+        moveStudentRight.setBounds(380,530,100,40);
+        add(moveStudentRight);
+        courseBox.addActionListener(e->{courseBoxSelected();});
 
 
 
@@ -234,7 +247,7 @@ public class SMFrame extends JFrame {
                 "student_id INTEGER NOT NULL, " +
                 "PRIMARY KEY(section_id,student_id), " +
                 "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
-                "FOREIGN KEY(student_id) REFERENCES student(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
 
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
@@ -285,7 +298,7 @@ public class SMFrame extends JFrame {
         secscroll.setVisible(false);
         teachersInSecLabel.setVisible(false);
         teacherBox.setVisible(false);
-        sectIDLabel.setVisible(false);
+        courseSectLabel.setVisible(false);
         courseBox.setVisible(false);
         stusectscroll.setVisible(false);
 
@@ -382,27 +395,6 @@ public class SMFrame extends JFrame {
         courseViewList.setListData(sql.getCourseList().toArray());
         newEntry();
     }
-    public void sectionView(){
-        id.setVisible(true);
-        fn.setVisible(true);
-        ln.setVisible(true);
-        idLabel.setVisible(true);
-        fnameLabel.setVisible(true);
-        lnameLabel.setVisible(true);
-        secscroll.setVisible(true);
-        stusectscroll.setVisible(true);
-        teacherBox.setVisible(true);
-        teachersInSecLabel.setVisible(true);
-        courseBox.setVisible(true);
-        sectIDLabel.setVisible(true);
-        sectionsViewText.setVisible(true);
-
-        sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
-    }
-    public void selectedSection(){
-        teacherBox
-    }
-
     public void selectedCourse(){
         Course curr = (Course) courseViewList.getSelectedValue();
         if(curr==null){
@@ -433,6 +425,32 @@ public class SMFrame extends JFrame {
             }
         }
     }
+    public void sectionView(){
+        id.setVisible(true);
+        idLabel.setVisible(true);
+        secscroll.setVisible(true);
+        stusectscroll.setVisible(true);
+        teacherBox.setVisible(true);
+        teachersInSecLabel.setVisible(true);
+        courseBox.setVisible(true);
+        courseSectLabel.setVisible(true);
+        sectionsViewText.setVisible(true);
+        ArrayList<Course> c = sql.getCourseList();
+        courseBox.removeAllItems();
+        for(int i = 0; i<c.size();i++){
+            courseBox.addItem(c.get(i));
+        }
+
+        sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+    }
+    public void courseBoxSelected(){
+        sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+    }
+    public void selectedSection(){
+
+    }
+
+
     public void saveChanges(){
         if(cview.equals("teachers")){
             Teacher curr = (Teacher) teacherViewList.getSelectedValue();
