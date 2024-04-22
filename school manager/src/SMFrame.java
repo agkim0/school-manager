@@ -57,7 +57,7 @@ public class SMFrame extends JFrame {
     private JList sectionsViewList = new JList();
     private JScrollPane secscroll = new JScrollPane(sectionsViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private JComboBox<Course> courseBox = new JComboBox<Course>();
-    private JComboBox<Teacher> teacherBox = new JComboBox<>();
+    private JComboBox<Teacher> teacherBox = new JComboBox<Teacher>();
     private JLabel teachersInSecLabel = new JLabel("Teacher: ");
     private JLabel courseSectLabel = new JLabel("Course: ");
     private JLabel studentsNotInSecLable = new JLabel("Not in Section");
@@ -68,6 +68,10 @@ public class SMFrame extends JFrame {
     private JScrollPane stusectscroll = new JScrollPane(studentsInSecList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private JButton moveStudentLeft = new JButton("<");
     private JButton moveStudentRight = new JButton(">");
+    private JButton sectNew = new JButton("New Section");
+    private JButton sectDelete = new JButton("Delete Section");
+    private JButton sectChanges = new JButton("Save Changes");
+    private JButton sectSave = new JButton("Save Section");
     private JButton saveChanges = new JButton("Save Changes");
     private JButton saveEntry = new JButton("Save Entry");
     private JButton newEntry = new JButton("New Entry");
@@ -183,7 +187,19 @@ public class SMFrame extends JFrame {
         add(moveStudentLeft);
         moveStudentRight.setBounds(380,530,100,40);
         add(moveStudentRight);
+        sectNew.setBounds(220,230,200,30);
+        add(sectNew);
+        sectSave.setBounds(430,230,200,30);
+        add(sectSave);
+        sectChanges.setBounds(430,230,200,30);
+        add(sectChanges);
+        sectDelete.setBounds(220,270,200,30);
+        add(sectDelete);
         courseBox.addActionListener(e->{courseBoxSelected();});
+        sectChanges.addActionListener(e->{sectChanges();});
+        sectDelete.addActionListener(e->{sectDelete();});
+        sectSave.addActionListener(e->{sectSave();});
+        sectNew.addActionListener(e->{sectNew();});
 
 
 
@@ -301,6 +317,10 @@ public class SMFrame extends JFrame {
         courseSectLabel.setVisible(false);
         courseBox.setVisible(false);
         stusectscroll.setVisible(false);
+        sectDelete.setVisible(false);
+        sectChanges.setVisible(false);
+        sectSave.setVisible(false);
+        sectNew.setVisible(false);
 
         saveEntry.setVisible(false);
         saveChanges.setVisible(false);
@@ -435,19 +455,51 @@ public class SMFrame extends JFrame {
         courseBox.setVisible(true);
         courseSectLabel.setVisible(true);
         sectionsViewText.setVisible(true);
+        sectNew.setVisible(true);
+        sectSave.setVisible(true);
         ArrayList<Course> c = sql.getCourseList();
         courseBox.removeAllItems();
         for(int i = 0; i<c.size();i++){
             courseBox.addItem(c.get(i));
         }
-
         sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+
     }
     public void courseBoxSelected(){
         sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
     }
+    public void sectSave(){
+        Course co = (Course) courseBox.getSelectedItem();
+        Teacher te = (Teacher) teacherBox.getSelectedItem();
+        sql.writeStatement("INSERT INTO section(course_id,teacher_id,) VALUES("+co.getId()+","+te.getId()+");");
+    }
+    public void sectDelete(){
+        sql.writeStatement("DELETE FROM section WHERE section_id="+id.getText()+";");
+    }
+    public void sectNew(){
+        sectSave.setVisible(true);
+        id.setText("");
+        sectDelete.setVisible(false);
+        sectChanges.setVisible(false);
+    }
+    public void sectChanges(){
+        Course co = (Course) courseBox.getSelectedItem();
+        Teacher te = (Teacher) teacherBox.getSelectedItem();
+        sql.writeStatement("UPDATE section SET course_id='"+co.getId()+"' WHERE section_id="+id.getText()+";");
+        sql.writeStatement("UPDATE section SET teacher_id='"+te.getId()+"' WHERE section_id="+id.getText()+";");
+        sectionView();
+    }
     public void selectedSection(){
-
+        Section curr = (Section) sectionsViewList.getSelectedValue();
+        id.setText(curr.getId()+"");
+        ArrayList<Teacher> sectTeach = sql.getTeacherList();
+        int i = 0;
+        for(int x =  0;x<sectTeach.size();x++){
+            if(sectTeach.get(x).getId()==curr.getTeacher_id()){
+                i=curr.getTeacher_id();
+            }
+        }
+        teacherBox.setSelectedItem();
     }
 
 
@@ -533,6 +585,10 @@ public class SMFrame extends JFrame {
         else if(cview.equals("students")){
             sql.writeStatement("DELETE FROM students WHERE student_id="+id.getText());
             studentView();
+        }
+        else if(cview.equals("courses")){
+            sql.writeStatement("DELETE FROM courses WHERE course_id="+id.getText());
+            courseView();
         }
     }
     public void courseTypeButtons(String select){
