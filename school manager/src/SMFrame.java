@@ -200,6 +200,7 @@ public class SMFrame extends JFrame {
         sectDelete.addActionListener(e->{sectDelete();});
         sectSave.addActionListener(e->{sectSave();});
         sectNew.addActionListener(e->{sectNew();});
+        sectionsViewList.addListSelectionListener(e->{selectedSection();});
 
 
 
@@ -269,6 +270,7 @@ public class SMFrame extends JFrame {
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
         teacherItem.addActionListener(e->{teacherView();});
         studentItem.addActionListener(e->{studentView();});
+        sectionItem.addActionListener(e->{sectionView();});
         courseItem.addActionListener(e->{courseView();});
         courseTypeKAP.addActionListener(e->{courseTypeButtons("KAP");});
         courseTypeACA.addActionListener(e->{courseTypeButtons("ACA");});
@@ -321,6 +323,14 @@ public class SMFrame extends JFrame {
         sectChanges.setVisible(false);
         sectSave.setVisible(false);
         sectNew.setVisible(false);
+        stusectscroll.setVisible(false);
+        stuNotSecscroll.setVisible(false);
+        studentsInSecList.setVisible(false);
+        studentsNotInSecList.setVisible(false);
+        moveStudentLeft.setVisible(false);
+        moveStudentRight.setVisible(false);
+        studentsInSecLable.setVisible(false);
+        studentsNotInSecLable.setVisible(false);
 
         saveEntry.setVisible(false);
         saveChanges.setVisible(false);
@@ -446,6 +456,7 @@ public class SMFrame extends JFrame {
         }
     }
     public void sectionView(){
+        setAllVisibilityFalse();
         id.setVisible(true);
         idLabel.setVisible(true);
         secscroll.setVisible(true);
@@ -457,49 +468,88 @@ public class SMFrame extends JFrame {
         sectionsViewText.setVisible(true);
         sectNew.setVisible(true);
         sectSave.setVisible(true);
+        stusectscroll.setVisible(true);
+        stuNotSecscroll.setVisible(true);
+        studentsNotInSecList.setVisible(true);
+        studentsInSecList.setVisible(true);
+        studentsNotInSecLable.setVisible(true);
+        studentsInSecLable.setVisible(true);
+        moveStudentLeft.setVisible(true);
+        moveStudentRight.setVisible(true);
         ArrayList<Course> c = sql.getCourseList();
         courseBox.removeAllItems();
         for(int i = 0; i<c.size();i++){
             courseBox.addItem(c.get(i));
         }
-        sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+        ArrayList<Teacher> t = sql.getTeacherList();
+        teacherBox.removeAllItems();
+        for(int i = 0; i<t.size();i++){
+            teacherBox.addItem(t.get(i));
+        }
+        courseBox.setSelectedItem(null);
+        teacherBox.setSelectedItem(null);
+        if(courseBox.getSelectedItem()!=null){
+            sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+        }
+
+
 
     }
+    public void sectionView2(){
+        teacherBox.setSelectedItem(null);
+        id.setText("");
+    }
     public void courseBoxSelected(){
-        sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+            sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+            sectionView2();
+
     }
     public void sectSave(){
         Course co = (Course) courseBox.getSelectedItem();
         Teacher te = (Teacher) teacherBox.getSelectedItem();
-        sql.writeStatement("INSERT INTO section(course_id,teacher_id,) VALUES("+co.getId()+","+te.getId()+");");
+        sql.writeStatement("INSERT INTO section(course_id,teacher_id) VALUES("+co.getId()+","+te.getId()+");");
+        sectionView2();
     }
     public void sectDelete(){
         sql.writeStatement("DELETE FROM section WHERE section_id="+id.getText()+";");
+        sectionView2();
     }
     public void sectNew(){
         sectSave.setVisible(true);
         id.setText("");
         sectDelete.setVisible(false);
         sectChanges.setVisible(false);
+        teacherBox.setSelectedItem(null);
     }
     public void sectChanges(){
         Course co = (Course) courseBox.getSelectedItem();
         Teacher te = (Teacher) teacherBox.getSelectedItem();
         sql.writeStatement("UPDATE section SET course_id='"+co.getId()+"' WHERE section_id="+id.getText()+";");
         sql.writeStatement("UPDATE section SET teacher_id='"+te.getId()+"' WHERE section_id="+id.getText()+";");
-        sectionView();
+        sectionView2();
+        teacherBox.setSelectedItem(null);
     }
     public void selectedSection(){
-        Section curr = (Section) sectionsViewList.getSelectedValue();
-        id.setText(curr.getId()+"");
-        ArrayList<Teacher> sectTeach = sql.getTeacherList();
-        int i = 0;
-        for(int x =  0;x<sectTeach.size();x++){
-            if(sectTeach.get(x).getId()==curr.getTeacher_id()){
-                i=curr.getTeacher_id();
+        if(sectionsViewList.getSelectedValue()!=null){
+            id.setText("");
+            teacherBox.setSelectedItem(null);
+            sectChanges.setVisible(true);
+            sectDelete.setVisible(true);
+            sectSave.setVisible(false);
+            Section curr = (Section) sectionsViewList.getSelectedValue();
+            id.setText(curr.getId()+"");
+            teacherBox.removeAllItems();
+            ArrayList<Teacher> sectTeach = sql.getTeacherList();
+            int i = 0;
+            for(int x = 0;x<sectTeach.size();x++){
+                if(sectTeach.get(x).getId()==curr.getTeacher_id()){
+                    i=x;
+                }
+                teacherBox.addItem(sectTeach.get(x));
             }
+            teacherBox.setSelectedItem(sectTeach.get(i));
         }
-        teacherBox.setSelectedItem();
+
     }
 
 
