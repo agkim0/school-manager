@@ -34,6 +34,6 @@ public class Student {
     }
 
     public String toString() {
-        return fn+" "+ln;
+        return id+" "+fn+" "+ln;
     }
 }

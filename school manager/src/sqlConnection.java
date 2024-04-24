@@ -87,25 +87,28 @@ public class sqlConnection {
 
     public ArrayList<Section> getSectionList(Course c){
         ArrayList<Section> list = new ArrayList<>();
-        try{
-            Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT * FROM section;");
-            int i = 1;
-            while(!rs.equals(null)&&rs.next()){
-                try {
-                    if(rs.getInt("course_id")==c.getId()){
-                        list.add(new Section(rs.getInt("section_id"),rs.getInt("course_id"),rs.getInt("teacher_id")));
+        if(c!=null){
+            try{
+                Statement st = connect.createStatement();
+                ResultSet rs= st.executeQuery("SELECT * FROM section;");
+                int i = 1;
+                while(!rs.equals(null)&&rs.next()){
+                    try {
+                        if(rs.getInt("course_id")==c.getId()){
+                            list.add(new Section(rs.getInt("section_id"),rs.getInt("course_id"),rs.getInt("teacher_id")));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
         return list;
+
     }
-    public ArrayList<Enrollment> getStudentsEnrolledInSectList(Section s){
+    public ArrayList<Enrollment> getEnrollmentList(Section s){
         ArrayList<Enrollment> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
@@ -126,43 +129,43 @@ public class sqlConnection {
         return list;
     }
 
-    public ArrayList<Enrollment> getStudentsNotEnrolledInSectList(Section s){
-        ArrayList<Enrollment> list = new ArrayList<>();
-        if(s==null){
-            try{
-                Statement st = connect.createStatement();
-                ResultSet rs= st.executeQuery("SELECT * FROM enrollment;");
-                int i = 1;
-                while(!rs.equals(null)&&rs.next()){
-                    try {
-                        list.add(new Enrollment(rs.getInt("student_id"),rs.getInt("section_id")));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        else {
-            try {
-                Statement st = connect.createStatement();
-                ResultSet rs = st.executeQuery("SELECT * FROM enrollment;");
-                int i = 1;
-                while (!rs.equals(null) && rs.next()) {
-                    try {
-                        if (rs.getInt("section_id") != s.getId()) {
-                            list.add(new Enrollment(rs.getInt("student_id"), rs.getInt("section_id")));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return list;
-
-    }
+//    public ArrayList<Enrollment> getStudentsNotEnrolledInSectList(Section s){
+//        ArrayList<Enrollment> list = new ArrayList<>();
+//        if(s==null){
+//            try{
+//                Statement st = connect.createStatement();
+//                ResultSet rs= st.executeQuery("SELECT * FROM enrollment;");
+//                int i = 1;
+//                while(!rs.equals(null)&&rs.next()){
+//                    try {
+//                        list.add(new Enrollment(rs.getInt("student_id"),rs.getInt("section_id")));
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//        else {
+//            try {
+//                Statement st = connect.createStatement();
+//                ResultSet rs = st.executeQuery("SELECT * FROM enrollment;");
+//                int i = 1;
+//                while (!rs.equals(null) && rs.next()) {
+//                    try {
+//                        if (rs.getInt("section_id") != s.getId()) {
+//                            list.add(new Enrollment(rs.getInt("student_id"), rs.getInt("section_id")));
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return list;
+//
+//    }
 }
