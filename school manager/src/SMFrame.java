@@ -201,6 +201,9 @@ public class SMFrame extends JFrame {
         sectSave.addActionListener(e->{sectSave();});
         sectNew.addActionListener(e->{sectNew();});
         sectionsViewList.addListSelectionListener(e->{selectedSection();});
+        moveStudentLeft.addActionListener(e->{moveStudentLeft();});
+        moveStudentRight.addActionListener(e->{moveStudentRight();});
+
 
 
 
@@ -488,9 +491,9 @@ public class SMFrame extends JFrame {
         }
         courseBox.setSelectedItem(null);
         teacherBox.setSelectedItem(null);
-        if(courseBox.getSelectedItem()!=null){
-            sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
-        }
+//        if(courseBox.getSelectedItem()!=null){
+//            sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+//        }
 
 
 
@@ -508,6 +511,8 @@ public class SMFrame extends JFrame {
         Course co = (Course) courseBox.getSelectedItem();
         Teacher te = (Teacher) teacherBox.getSelectedItem();
         sql.writeStatement("INSERT INTO section(course_id,teacher_id) VALUES("+co.getId()+","+te.getId()+");");
+        studentsInSecList.setListData(sql.getStudentsEnrolledInSectList(null).toArray());
+        studentsNotInSecList.setListData(sql.getStudentsNotEnrolledInSectList(null).toArray());
         sectionView2();
     }
     public void sectDelete(){
@@ -548,11 +553,31 @@ public class SMFrame extends JFrame {
                 teacherBox.addItem(sectTeach.get(x));
             }
             teacherBox.setSelectedItem(sectTeach.get(i));
+
+            studentsNotInSecList.setListData(sql.getStudentsNotEnrolledInSectList(curr).toArray());
+            studentsInSecList.setListData(sql.getStudentsEnrolledInSectList(curr).toArray());
         }
 
     }
 
-
+    public void moveStudentLeft(){
+        if(studentsInSecList.getSelectedValue()!=null&&sectionsViewList.getSelectedValue()!=null){
+            Section currSect = (Section) sectionsViewList.getSelectedValue();
+            sql.writeStatement("DELETE FROM enrollment WHERE section_id="+currSect.getId()+";");
+            studentsNotInSecList.setListData(sql.getStudentsNotEnrolledInSectList(currSect).toArray());
+            studentsInSecList.setListData(sql.getStudentsEnrolledInSectList(currSect).toArray());
+        }
+    }
+    public void moveStudentRight(){
+        if(studentsNotInSecList.getSelectedValue()!=null&&sectionsViewList.getSelectedValue()!=null)
+        {
+            Student curr = (Student) studentsInSecList.getSelectedValue();
+            Section currSect = (Section) sectionsViewList.getSelectedValue();
+            sql.writeStatement("INSERT INTO enrollment(student_id,section_id) VALUES("+curr.getId()+", "+currSect.getId()+");");
+            studentsNotInSecList.setListData(sql.getStudentsNotEnrolledInSectList(currSect).toArray());
+            studentsInSecList.setListData(sql.getStudentsEnrolledInSectList(currSect).toArray());
+        }
+    }
     public void saveChanges(){
         if(cview.equals("teachers")){
             Teacher curr = (Teacher) teacherViewList.getSelectedValue();
@@ -610,6 +635,8 @@ public class SMFrame extends JFrame {
         }
         else if(cview.equals("students")){
             sql.writeStatement("INSERT INTO students(first_name, last_name) VALUES('"+fn.getText()+"','"+ln.getText()+"');");
+            ArrayList<Student> s = sql.getStudentList();
+            sql.writeStatement("INSERT INTO enrollment(student_id) VALUES("+s.get(s.size()-1).getId()+", -1);");
             studentView();
         } else if(cview.equals("courses")){
             int i = -1;
