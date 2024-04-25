@@ -502,6 +502,9 @@ public class SMFrame extends JFrame {
     public void sectionView2(){
         teacherBox.setSelectedItem(null);
         id.setText("");
+        sectChanges.setVisible(false);
+        sectDelete.setVisible(false);
+        sectSave.setVisible(true);
         sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
         studentSorter(null);
     }
@@ -542,10 +545,13 @@ public class SMFrame extends JFrame {
 
     }
     public void sectSave(){
-        Course co = (Course) courseBox.getSelectedItem();
-        Teacher te = (Teacher) teacherBox.getSelectedItem();
-        sql.writeStatement("INSERT INTO section(course_id,teacher_id) VALUES("+co.getId()+","+te.getId()+");");
-        sectionView2();
+        if(teacherBox.getSelectedItem()!=null&&courseBox.getSelectedItem()!=null){
+            Course co = (Course) courseBox.getSelectedItem();
+            Teacher te = (Teacher) teacherBox.getSelectedItem();
+            sql.writeStatement("INSERT INTO section(course_id,teacher_id) VALUES("+co.getId()+","+te.getId()+");");
+            sectionView2();
+        }
+
     }
     public void sectDelete(){
         sql.writeStatement("DELETE FROM section WHERE section_id="+id.getText()+";");
@@ -557,6 +563,7 @@ public class SMFrame extends JFrame {
         sectDelete.setVisible(false);
         sectChanges.setVisible(false);
         teacherBox.setSelectedItem(null);
+        sectionView2();
     }
     public void sectChanges(){
         Course co = (Course) courseBox.getSelectedItem();
@@ -568,7 +575,6 @@ public class SMFrame extends JFrame {
     }
     public void selectedSection(){
         if(sectionsViewList.getSelectedValue()!=null){
-            id.setText("");
             teacherBox.setSelectedItem(null);
             sectChanges.setVisible(true);
             sectDelete.setVisible(true);

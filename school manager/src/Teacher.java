@@ -35,6 +35,6 @@ public class Teacher {
 
     @Override
     public String toString() {
-        return fn+" "+ln;
+        return id+" "+fn+" "+ln;
     }
 }
