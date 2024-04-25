@@ -42,6 +42,8 @@ public class SMFrame extends JFrame {
     private JList studentViewList = new JList();
     private JLabel studentViewText = new JLabel("Students");
     private JScrollPane sscroll = new JScrollPane(studentViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private JList enrollViewList = new JList();
+    private JScrollPane enscroll = new JScrollPane(enrollViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private JLabel idLabel = new JLabel("ID: ");
     private JLabel fnameLabel = new JLabel("First Name: ");
     private JLabel lnameLabel = new JLabel("Last Name: ");
@@ -137,6 +139,8 @@ public class SMFrame extends JFrame {
         add(studentViewText);
         sscroll.setBounds(10,50,175,600);
         add(sscroll);
+        enscroll.setBounds(220,280,100,150);
+        add(enscroll);
         studentViewList.addListSelectionListener(e->{selectedStudent();});
 
         //course view
