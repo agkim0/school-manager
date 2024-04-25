@@ -155,6 +155,7 @@ public class SMFrame extends JFrame {
         add(sectionID);
         studentViewList.addListSelectionListener(e->{selectedStudent();});
 
+
         //course view
         courseViewText.setBounds(10,35,100,10);
         add(courseViewText);
@@ -322,6 +323,10 @@ public class SMFrame extends JFrame {
         sscroll.setVisible(false);
         enscroll.setVisible(false);
         enrollViewList.setVisible(false);
+        courseTitleLabel.setVisible(false);
+        teacherIDandNameLable.setVisible(false);
+        sectionID.setVisible(false);
+        scheduleLabel.setVisible(false);
 
         cn.setVisible(false);
         courseViewList.setVisible(false);
@@ -410,6 +415,10 @@ public class SMFrame extends JFrame {
         enrollViewList.setVisible(true);
         enscroll.setVisible(true);
         enrollViewList.setListData(getSchedule(null).toArray());
+        courseTitleLabel.setVisible(true);
+        teacherIDandNameLable.setVisible(true);
+        sectionID.setVisible(true);
+        scheduleLabel.setVisible(true);
         newEntry();
 
     }
@@ -448,6 +457,10 @@ public class SMFrame extends JFrame {
             System.out.println(getSchedule(curr));
             enrollViewList.setListData(getSchedule(curr).toArray());
         }
+    }
+
+    public void enrollSelected(){
+        courseTitleLabel.setText("Course: ");
     }
     public void courseView(){
         setAllVisibilityFalse();
