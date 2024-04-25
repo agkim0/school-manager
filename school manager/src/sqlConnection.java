@@ -105,28 +105,73 @@ public class sqlConnection {
                 e.printStackTrace();
             }
         }
+        else{
+            try{
+                Statement st = connect.createStatement();
+                ResultSet rs= st.executeQuery("SELECT * FROM section;");
+                int i = 1;
+                while(!rs.equals(null)&&rs.next()){
+                    try {
+                        list.add(new Section(rs.getInt("section_id"),rs.getInt("course_id"),rs.getInt("teacher_id")));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         return list;
 
     }
     public ArrayList<Enrollment> getEnrollmentList(Section s){
         ArrayList<Enrollment> list = new ArrayList<>();
-        try{
-            Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT * FROM enrollment;");
-            int i = 1;
-            while(!rs.equals(null)&&rs.next()){
-                try {
-                    if(rs.getInt("section_id")==s.getId()){
+        if(s==null){
+            try{
+                Statement st = connect.createStatement();
+                ResultSet rs= st.executeQuery("SELECT * FROM enrollment;");
+                int i = 1;
+                while(!rs.equals(null)&&rs.next()){
+                    try {
                         list.add(new Enrollment(rs.getInt("student_id"),rs.getInt("section_id")));
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        }
+        else{
+            try{
+                Statement st = connect.createStatement();
+                ResultSet rs= st.executeQuery("SELECT * FROM enrollment;");
+                int i = 1;
+                while(!rs.equals(null)&&rs.next()){
+                    try {
+                        if(rs.getInt("section_id")==s.getId()){
+                            list.add(new Enrollment(rs.getInt("student_id"),rs.getInt("section_id")));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
         return list;
+    }
+
+    public Section fromSectID(int id){
+        ArrayList<Section> sectList = getSectionList(null);
+        for(int i=0; i<sectList.size();i++){
+            if(sectList.get(i).getId()==id){
+                return sectList.get(i);
+            }
+        }
+        return null;
     }
 
 //    public ArrayList<Enrollment> getStudentsNotEnrolledInSectList(Section s){

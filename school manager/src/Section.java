@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Section {
     private int id;
     private int course_id;
@@ -35,6 +37,12 @@ public class Section {
 
     @Override
     public String toString() {
+        ArrayList<Course> c = SMFrame.sql.getCourseList();
+        for(int i = 0; i<c.size();i++){
+            if(c.get(i).getId()==course_id){
+                return id+" "+c.get(i).getCn();
+            }
+        }
         return id+"";
     }
 }
