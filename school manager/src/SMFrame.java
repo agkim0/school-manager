@@ -36,7 +36,10 @@ public class SMFrame extends JFrame {
     private JList teacherViewList = new JList<>();
     private JLabel teacherViewText = new JLabel("Teachers");
     private JScrollPane tscroll = new JScrollPane(teacherViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    private JTextField id = new JTextField();
+    private JList taughtViewList = new JList<>();
+    private JScrollPane taughtscroll = new JScrollPane(taughtViewList,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private JLabel taughtLabel = new JLabel("Sections Taught");
+    private JLabel id = new JLabel();
     private JTextField ln = new JTextField();
     private JTextField fn = new JTextField();
     private JTextField cn = new JTextField();
@@ -113,7 +116,7 @@ public class SMFrame extends JFrame {
 
         idLabel.setFont(labels);
         fnameLabel.setFont(labels);
-        lnameLabel.setFont(labels);
+        lnameLabel.setFont(labels);id.setFont(labels);
 //        saveChanges.setFont(labels);
         cnameLabel.setFont(labels);
         courseTypeLabel.setFont(labels);
@@ -138,6 +141,10 @@ public class SMFrame extends JFrame {
         add(teacherViewText);
         tscroll.setBounds(10,50,175,600);
         add(tscroll);
+        taughtscroll.setBounds(220,320,200,150);
+        add(taughtscroll);
+        taughtLabel.setBounds(220,300,100,10);
+        add(taughtLabel);
         teacherViewList.addListSelectionListener(e->{selectedTeacher();});
 
         //student view
@@ -267,7 +274,6 @@ public class SMFrame extends JFrame {
                 "last_name TEXT NOT NULL," +
                 "PRIMARY KEY(teacher_id)" +
                 ");");
-
         sql.writeStatement("CREATE TABLE IF NOT EXISTS students(" +
                 "student_id INTEGER NOT NULL AUTO_INCREMENT," +
                 "first_name TEXT NOT NULL," +
@@ -294,6 +300,17 @@ public class SMFrame extends JFrame {
                 "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
                 "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
+
+        ArrayList<Teacher> t = sql.getTeacherList();
+        boolean exists = false;
+        for(int i = 0;i<t.size();i++){
+            if(t.get(i).getId()==-1){
+                exists = true;
+            }
+        }
+        if(!exists){
+            sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
+        }
 
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
         teacherItem.addActionListener(e->{teacherView();});
@@ -325,6 +342,9 @@ public class SMFrame extends JFrame {
         teacherViewList.setVisible(false);
         teacherViewText.setVisible(false);
         tscroll.setVisible(false);
+        taughtViewList.setVisible(false);
+        taughtscroll.setVisible(false);
+        taughtLabel.setVisible(false);
 
         studentViewList.setVisible(false);
         studentViewText.setVisible(false);
@@ -387,6 +407,10 @@ public class SMFrame extends JFrame {
         teacherViewList.setVisible(true);
         teacherViewText.setVisible(true);
         teacherViewList.setListData(sql.getTeacherList().toArray());
+        taughtViewList.setVisible(true);
+        taughtscroll.setVisible(true);
+        taughtLabel.setVisible(true);
+
         newEntry();
 
     }
@@ -405,8 +429,20 @@ public class SMFrame extends JFrame {
             id.setText(""+curr.getId());
             ln.setText(""+curr.getLn());
             fn.setText(""+curr.getFn());
+            taughtViewList.setListData(getTaught(curr).toArray());
         }
     }
+    public ArrayList<Section> getTaught(Teacher t){
+        ArrayList<Section> secList = sql.getSectionList(null);
+        ArrayList<Section> taught = new ArrayList<>();
+        for(int i = 0;i<secList.size();i++){
+            if(secList.get(i).getTeacher_id()==t.getId()){
+                taught.add(secList.get(i));
+            }
+        }
+        return taught;
+    }
+
     public void studentView(){
         setAllVisibilityFalse();
         saveChanges.setVisible(false);
@@ -636,7 +672,7 @@ public class SMFrame extends JFrame {
     }
     public void sectNew(){
         sectSave.setVisible(true);
-        id.setText("");
+        id.setText("AUTO-GENERATED");
         sectDelete.setVisible(false);
         sectChanges.setVisible(false);
         teacherBox.setSelectedItem(null);
@@ -738,6 +774,7 @@ public class SMFrame extends JFrame {
         saveEntry.setVisible(true);
         deleteEntry.setVisible(false);
         saveChanges.setVisible(false);
+        taughtViewList.setListData(new ArrayList<>().toArray());
 
     }
     public void saveEntry(){
@@ -772,6 +809,10 @@ public class SMFrame extends JFrame {
     }
     public void deleteEntry(){
         if(cview.equals("teachers")){
+            ArrayList<Section> staught = sql.getSectionsTaught((Teacher) teacherViewList.getSelectedValue());
+            for(int i = 0;i<staught.size();i++){
+                sql.writeStatement("UPDATE section SET teacher_id=-1 WHERE section_id="+staught.get(i)+";");
+            }
             sql.writeStatement("DELETE FROM teachers WHERE teacher_id="+id.getText());
             teacherView();
         }
