@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowListener;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -82,6 +83,7 @@ public class SMFrame extends JFrame {
     private JButton saveEntry = new JButton("Save Entry");
     private JButton newEntry = new JButton("New Entry");
     private JButton deleteEntry = new JButton("Delete Entry");
+    private JLabel abtText = new JLabel("About: This program was created by Audrey Kim");
 
     public SMFrame(){
         super("School Manager");
@@ -244,6 +246,11 @@ public class SMFrame extends JFrame {
         add(deleteEntry);
         deleteEntry.addActionListener(e->{deleteEntry();});
 
+        abtText.setBounds(10,10,500,500);
+        add(abtText);
+        abtText.setFont(labels);
+        about.addActionListener(e->{about();});
+        exitItem.addActionListener(e->{exit();});
 
 
 
@@ -363,6 +370,7 @@ public class SMFrame extends JFrame {
         saveChanges.setVisible(false);
         newEntry.setVisible(false);
         deleteEntry.setVisible(false);
+        abtText.setVisible(false);
     }
 
     public void teacherView(){
@@ -789,5 +797,14 @@ public class SMFrame extends JFrame {
             courseTypeACA.setSelected(false);
             courseTypeKAP.setSelected(false);
         }
+    }
+
+    public void about(){
+        setAllVisibilityFalse();
+        abtText.setVisible(true);
+    }
+
+    public void exit(){
+        dispose();
     }
 }
