@@ -149,11 +149,12 @@ public class SMFrame extends JFrame {
         add(scheduleLabel);
         courseTitleLabel.setBounds(340, 330,200,10);
         add(courseTitleLabel);
-        teacherIDandNameLable.setBounds(340,350,200,10);
+        teacherIDandNameLable.setBounds(340,350,300,10);
         add(teacherIDandNameLable);
         sectionID.setBounds(340,370,200,10);
         add(sectionID);
         studentViewList.addListSelectionListener(e->{selectedStudent();});
+        enrollViewList.addListSelectionListener(e->{enrollSelected();});
 
 
         //course view
@@ -419,6 +420,9 @@ public class SMFrame extends JFrame {
         teacherIDandNameLable.setVisible(true);
         sectionID.setVisible(true);
         scheduleLabel.setVisible(true);
+        courseTitleLabel.setText("Course Title: ");
+        teacherIDandNameLable.setText("Teacher ID and Name: ");
+        sectionID.setText("Section ID: ");
         newEntry();
 
     }
@@ -456,11 +460,20 @@ public class SMFrame extends JFrame {
             fn.setText(""+curr.getFn());
             System.out.println(getSchedule(curr));
             enrollViewList.setListData(getSchedule(curr).toArray());
+            courseTitleLabel.setText("Course: ");
+            teacherIDandNameLable.setText("Teacher ID and Name: ");
+            sectionID.setText("Section ID: ");
         }
     }
 
     public void enrollSelected(){
-        courseTitleLabel.setText("Course: ");
+        Section curr = (Section) enrollViewList.getSelectedValue();
+        if(curr!=null){
+            courseTitleLabel.setText("Course: "+curr.getCourse().getCn());
+            teacherIDandNameLable.setText("Teacher ID and Name: "+curr.getTeacher().getId()+" - "+curr.getTeacher().getFn()+" "+curr.getTeacher().getLn());
+            sectionID.setText("Section ID: "+curr.getId());
+        }
+
     }
     public void courseView(){
         setAllVisibilityFalse();
@@ -543,6 +556,7 @@ public class SMFrame extends JFrame {
         }
         courseBox.setSelectedItem(null);
         teacherBox.setSelectedItem(null);
+        sectionsViewList.setListData((new ArrayList<Section>()).toArray());
 
 //        if(courseBox.getSelectedItem()!=null){
 //            sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
@@ -552,13 +566,16 @@ public class SMFrame extends JFrame {
 
     }
     public void sectionView2(){
-        teacherBox.setSelectedItem(null);
-        id.setText("");
-        sectChanges.setVisible(false);
-        sectDelete.setVisible(false);
-        sectSave.setVisible(true);
-        sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
-        studentSorter(null);
+        if(courseBox.getSelectedItem()!=null){
+            teacherBox.setSelectedItem(null);
+            id.setText("");
+            sectChanges.setVisible(false);
+            sectDelete.setVisible(false);
+            sectSave.setVisible(true);
+            sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
+            studentSorter(null);
+        }
+
     }
 
     public void studentSorter(Section s){

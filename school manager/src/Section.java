@@ -35,6 +35,26 @@ public class Section {
         this.teacher_id = teacher_id;
     }
 
+    public Course getCourse(){
+        ArrayList<Course> c = SMFrame.sql.getCourseList();
+        for(int i=0;i<c.size();i++){
+            if(c.get(i).getId()==course_id){
+                return c.get(i);
+            }
+        }
+        return null;
+    }
+
+    public Teacher getTeacher(){
+        ArrayList<Teacher> c = SMFrame.sql.getTeacherList();
+        for(int i=0;i<c.size();i++){
+            if(c.get(i).getId()==teacher_id){
+                return c.get(i);
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         ArrayList<Course> c = SMFrame.sql.getCourseList();

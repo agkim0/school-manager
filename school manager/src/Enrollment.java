@@ -33,6 +33,10 @@ public class Enrollment {
         this.section_id = section_id;
     }
 
+//    public Section getSection(){
+//
+//    }
+
     @Override
     public String toString() {
         String fn = "";
