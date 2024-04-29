@@ -1,14 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowListener;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Scanner;
 
 public class SMFrame extends JFrame {
     private Font labels = new Font("Serif",Font.BOLD,20);
@@ -258,6 +258,9 @@ public class SMFrame extends JFrame {
         abtText.setFont(labels);
         about.addActionListener(e->{about();});
         exitItem.addActionListener(e->{exit();});
+        importItem.addActionListener(e->{importAction();});
+        exportItem.addActionListener(e->{exportAction();});
+        purgeItem.addActionListener(e->{purge();});
 
 
 
@@ -568,6 +571,7 @@ public class SMFrame extends JFrame {
         }
     }
     public void sectionView(){
+        cview="sections";
         setAllVisibilityFalse();
         id.setVisible(true);
         idLabel.setVisible(true);
@@ -843,6 +847,178 @@ public class SMFrame extends JFrame {
     public void about(){
         setAllVisibilityFalse();
         abtText.setVisible(true);
+    }
+
+    public void importAction(){
+        sql.writeStatement("DROP TABLE IF EXISTS student;");
+        sql.writeStatement("DROP TABLE IF EXISTS teacher;");
+        sql.writeStatement("DROP TABLE IF EXISTS course;");
+        sql.writeStatement("DROP TABLE IF EXISTS section;");
+
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
+                "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
+                "first_name TEXT NOT NULL," +
+                "last_name TEXT NOT NULL," +
+                "PRIMARY KEY(teacher_id)" +
+                ");");
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS students(" +
+                "student_id INTEGER NOT NULL AUTO_INCREMENT," +
+                "first_name TEXT NOT NULL," +
+                "last_name TEXT NOT NULL," +
+                "PRIMARY KEY(student_id));");
+
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS courses(" +
+                "course_id INTEGER NOT NULL AUTO_INCREMENT," +
+                "name TEXT NOT NULL," +
+                "type TEXT NOT NULL," +
+                "PRIMARY KEY(course_id));");
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO_INCREMENT,"+
+                "course_id INTEGER NOT NULL,"+
+                "teacher_id INTEGER NOT NULL,"+
+                "PRIMARY KEY(section_id),"+
+                "FOREIGN KEY(course_id) REFERENCES courses(course_id) "+
+                "ON UPDATE CASCADE "+
+                "ON DELETE CASCADE,"+
+                "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                ");");
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS enrollment(section_id INTEGER NOT NULL, " +
+                "student_id INTEGER NOT NULL, " +
+                "PRIMARY KEY(section_id,student_id), " +
+                "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
+                "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                ");");
+
+        JFileChooser fileChooser = new JFileChooser();
+        int res = fileChooser.showOpenDialog(null);
+        if(res==JFileChooser.APPROVE_OPTION){
+            File f = new File(fileChooser.getSelectedFile().getAbsolutePath());
+            try{
+                Scanner egg = new Scanner(f);
+                egg.nextLine();
+                while(egg.hasNextLine()){
+                    String line = egg.nextLine();
+                    if(line.contains("Teacher")){
+                        break;
+                    }
+                    String[] array = line.split(",");
+                    sql.writeStatement("INSERT INTO student(student_id,first_name,last_name) values ("+array[0]+",\'"+array[1]+",\'"+array[2]+",\');");
+                }
+                while(egg.hasNextLine()){
+                    String line = egg.nextLine();
+                    if(line.contains("Courses")){
+                        break;
+                    }
+                    String[] array = line.split(",");
+                    sql.writeStatement("INSERT INTO teacher(teacher_id,first_name,last_name) values ("+array[0]+",\'"+array[1]+",\'"+array[2]+",\');");
+                }
+                while(egg.hasNextLine()){
+                    String line = egg.nextLine();
+                    if(line.contains("Section")){
+                        break;
+                    }
+                    String[] array = line.split(",");
+                    sql.writeStatement("INSERT INTO course(course_id,name,type) values ("+array[0]+",\'"+array[1]+",\'"+array[2]+",\');");
+                }
+                while(egg.hasNextLine()){
+                    String line = egg.nextLine();
+                    if(line.contains("Enrollment")){
+                        break;
+                    }
+                    String[] array = line.split(",");
+                    sql.writeStatement("INSERT INTO section(section_id,course_id,teacher_id) values ("+array[0]+","+array[1]+","+array[2]+");");
+                }
+                while(egg.hasNextLine()){
+                    String line = egg.nextLine();
+                    String[] array = line.split(",");
+                    sql.writeStatement("INSERT INTO enrollment(section_id,student_id) values ("+array[0]+","+array[1]+");");
+                }
+
+
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    public void exportAction(){
+        PrintWriter out = null;
+        try{
+            out = new PrintWriter("output.txt");
+        }
+        catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+
+        try{
+            ResultSet students = sql.snQueryEx("students");
+            out.println("Students");
+            while(students!=null&&students.next()){
+                out.println(students.getInt("student_id")+", "+students.getString("first_name")+", "+students.getString("last_name"));
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        try{
+            ResultSet teachers = sql.snQueryEx("teachers");
+            out.println("Teachers");
+            while(teachers!=null&&teachers.next()){
+                out.println(teachers.getInt("teacher_id")+", "+teachers.getString("first_name")+", "+teachers.getString("last_name"));
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        try{
+            ResultSet course = sql.snQueryEx("courses");
+            out.println("Courses");
+            while(course!=null&&course.next()){
+                out.println(course.getInt("course_id")+", "+course.getString("name")+", "+course.getInt("type"));
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        try{
+            ResultSet enrollment = sql.snQueryEx("enrollment");
+            out.println("Enrollment");
+            while(enrollment!=null&&enrollment.next()){
+                out.println(enrollment.getInt("section_id")+", "+enrollment.getInt("student_id"));
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        out.close();
+    }
+
+    public void purge(){
+        try{
+            sql.writeStatement("DROP TABLE IF EXISTS enrollment");
+            sql.writeStatement("DROP TABLE IF EXISTS section;");
+            sql.writeStatement("DROP TABLE IF EXISTS student;");
+            sql.writeStatement("DROP TABLE IF EXISTS teacher;");
+            sql.writeStatement("DROP TABLE IF EXISTS course;");
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        if(cview.equals("teachers")){
+            teacherView();
+        }
+        else if(cview.equals("students")){
+            studentView();
+        }
+        else if(cview.equals("courses")){
+            courseView();
+        }
+        else if(cview.equals("sections")){
+            sectionView();
+        }
     }
 
     public void exit(){

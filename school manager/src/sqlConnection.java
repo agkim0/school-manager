@@ -213,6 +213,19 @@ public class sqlConnection {
         return null;
     }
 
+    public ResultSet snQueryEx(String table){
+        try{
+            Statement st = connect.createStatement();
+            return st.executeQuery("Select * FROM "+table+";");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+
+    }
+
 //    public ArrayList<Enrollment> getStudentsNotEnrolledInSectList(Section s){
 //        ArrayList<Enrollment> list = new ArrayList<>();
 //        if(s==null){

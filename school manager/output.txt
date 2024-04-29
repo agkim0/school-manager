@@ -1,0 +1,16 @@
+Students
+1, audrey, kim
+4, Crystal, Yang
+Teachers
+-1, No, Teacher
+2, sarah, baugauss
+3, matt, porter
+4, D, Lyles
+Courses
+1, Computer Science A, 2
+2, Nutrition, 0
+3, Orchestra, 1
+Enrollment
+2, 1
+3, 1
+2, 4
