@@ -152,15 +152,15 @@ public class SMFrame extends JFrame {
         add(studentViewText);
         sscroll.setBounds(10,50,175,600);
         add(sscroll);
-        enscroll.setBounds(220,320,100,150);
+        enscroll.setBounds(220,320,200,150);
         add(enscroll);
         scheduleLabel.setBounds(220,300,100,10);
         add(scheduleLabel);
-        courseTitleLabel.setBounds(340, 330,200,10);
+        courseTitleLabel.setBounds(440, 330,200,15);
         add(courseTitleLabel);
-        teacherIDandNameLable.setBounds(340,350,300,10);
+        teacherIDandNameLable.setBounds(440,350,300,15);
         add(teacherIDandNameLable);
-        sectionID.setBounds(340,370,200,10);
+        sectionID.setBounds(440,370,200,15);
         add(sectionID);
         studentViewList.addListSelectionListener(e->{selectedStudent();});
         enrollViewList.addListSelectionListener(e->{enrollSelected();});
@@ -329,7 +329,7 @@ public class SMFrame extends JFrame {
         id.setVisible(true);
         idLabel.setVisible(true);
         setAllVisibilityFalse();
-        studentView();
+        teacherView();
     }
 
 
@@ -409,7 +409,14 @@ public class SMFrame extends JFrame {
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name) VALUES('testfn','testln');");
         teacherViewList.setVisible(true);
         teacherViewText.setVisible(true);
-        teacherViewList.setListData(sql.getTeacherList().toArray());
+        ArrayList<Teacher> t = sql.getTeacherList();
+        for(int i =0;i<t.size();i++){
+            if(t.get(i).getId()==-1){
+                t.remove(i);
+                break;
+            }
+        }
+        teacherViewList.setListData(t.toArray());
         taughtViewList.setVisible(true);
         taughtscroll.setVisible(true);
         taughtLabel.setVisible(true);
@@ -605,6 +612,8 @@ public class SMFrame extends JFrame {
         courseBox.setSelectedItem(null);
         teacherBox.setSelectedItem(null);
         sectionsViewList.setListData((new ArrayList<Section>()).toArray());
+        studentsInSecList.setListData((new ArrayList<Section>()).toArray());
+        studentsNotInSecList.setListData((new ArrayList<Section>()).toArray());
 
 //        if(courseBox.getSelectedItem()!=null){
 //            sectionsViewList.setListData(sql.getSectionList((Course) courseBox.getSelectedItem()).toArray());
@@ -815,7 +824,7 @@ public class SMFrame extends JFrame {
         if(cview.equals("teachers")){
             ArrayList<Section> staught = sql.getSectionsTaught((Teacher) teacherViewList.getSelectedValue());
             for(int i = 0;i<staught.size();i++){
-                sql.writeStatement("UPDATE section SET teacher_id=-1 WHERE section_id="+staught.get(i)+";");
+                sql.writeStatement("UPDATE section SET teacher_id=-1 WHERE section_id="+staught.get(i).getId()+";");
             }
             sql.writeStatement("DELETE FROM teachers WHERE teacher_id="+id.getText());
             teacherView();
@@ -850,10 +859,11 @@ public class SMFrame extends JFrame {
     }
 
     public void importAction(){
-        sql.writeStatement("DROP TABLE IF EXISTS student;");
-        sql.writeStatement("DROP TABLE IF EXISTS teacher;");
-        sql.writeStatement("DROP TABLE IF EXISTS course;");
+        sql.writeStatement("DROP TABLE IF EXISTS enrollment");
         sql.writeStatement("DROP TABLE IF EXISTS section;");
+        sql.writeStatement("DROP TABLE IF EXISTS students;");
+        sql.writeStatement("DROP TABLE IF EXISTS teachers;");
+        sql.writeStatement("DROP TABLE IF EXISTS courses;");
 
         sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
                 "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
@@ -897,40 +907,53 @@ public class SMFrame extends JFrame {
                 egg.nextLine();
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
-                    if(line.contains("Teacher")){
+                    if(line.contains("Teachers")){
                         break;
                     }
-                    String[] array = line.split(",");
-                    sql.writeStatement("INSERT INTO student(student_id,first_name,last_name) values ("+array[0]+",\'"+array[1]+",\'"+array[2]+",\');");
+                    String[] array = line.split(", ");
+                    sql.writeStatement("INSERT INTO students(student_id,first_name,last_name) values ("+array[0]+",'"+array[1]+"','"+array[2]+"');");
                 }
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
                     if(line.contains("Courses")){
                         break;
                     }
-                    String[] array = line.split(",");
-                    sql.writeStatement("INSERT INTO teacher(teacher_id,first_name,last_name) values ("+array[0]+",\'"+array[1]+",\'"+array[2]+",\');");
+                    String[] array = line.split(", ");
+                    sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) values ("+array[0]+",'"+array[1]+"','"+array[2]+"');");
                 }
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
                     if(line.contains("Section")){
                         break;
                     }
-                    String[] array = line.split(",");
-                    sql.writeStatement("INSERT INTO course(course_id,name,type) values ("+array[0]+",\'"+array[1]+",\'"+array[2]+",\');");
+                    String[] array = line.split(", ");
+                    System.out.println(array.length);
+                    sql.writeStatement("INSERT INTO courses(course_id,name,type) values ("+array[0]+",'"+array[1]+"',"+array[2]+");");
                 }
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
                     if(line.contains("Enrollment")){
                         break;
                     }
-                    String[] array = line.split(",");
+                    String[] array = line.split(", ");
                     sql.writeStatement("INSERT INTO section(section_id,course_id,teacher_id) values ("+array[0]+","+array[1]+","+array[2]+");");
                 }
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
-                    String[] array = line.split(",");
+                    String[] array = line.split(", ");
                     sql.writeStatement("INSERT INTO enrollment(section_id,student_id) values ("+array[0]+","+array[1]+");");
+                }
+                if(cview.equals("teachers")){
+                    teacherView();
+                }
+                else if(cview.equals("students")){
+                    studentView();
+                }
+                else if(cview.equals("courses")){
+                    courseView();
+                }
+                else if(cview.equals("sections")){
+                    sectionView();
                 }
 
 
@@ -983,6 +1006,17 @@ public class SMFrame extends JFrame {
         }
 
         try{
+            ResultSet course = sql.snQueryEx("section");
+            out.println("Section");
+            while(course!=null&&course.next()){
+                out.println(course.getInt("section_id")+", "+course.getString("course_id")+", "+course.getInt("teacher_id"));
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        try{
             ResultSet enrollment = sql.snQueryEx("enrollment");
             out.println("Enrollment");
             while(enrollment!=null&&enrollment.next()){
@@ -999,9 +1033,41 @@ public class SMFrame extends JFrame {
         try{
             sql.writeStatement("DROP TABLE IF EXISTS enrollment");
             sql.writeStatement("DROP TABLE IF EXISTS section;");
-            sql.writeStatement("DROP TABLE IF EXISTS student;");
-            sql.writeStatement("DROP TABLE IF EXISTS teacher;");
-            sql.writeStatement("DROP TABLE IF EXISTS course;");
+            sql.writeStatement("DROP TABLE IF EXISTS students;");
+            sql.writeStatement("DROP TABLE IF EXISTS teachers;");
+            sql.writeStatement("DROP TABLE IF EXISTS courses;");
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
+                    "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
+                    "first_name TEXT NOT NULL," +
+                    "last_name TEXT NOT NULL," +
+                    "PRIMARY KEY(teacher_id)" +
+                    ");");
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS students(" +
+                    "student_id INTEGER NOT NULL AUTO_INCREMENT," +
+                    "first_name TEXT NOT NULL," +
+                    "last_name TEXT NOT NULL," +
+                    "PRIMARY KEY(student_id));");
+
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS courses(" +
+                    "course_id INTEGER NOT NULL AUTO_INCREMENT," +
+                    "name TEXT NOT NULL," +
+                    "type TEXT NOT NULL," +
+                    "PRIMARY KEY(course_id));");
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO_INCREMENT,"+
+                    "course_id INTEGER NOT NULL,"+
+                    "teacher_id INTEGER NOT NULL,"+
+                    "PRIMARY KEY(section_id),"+
+                    "FOREIGN KEY(course_id) REFERENCES courses(course_id) "+
+                    "ON UPDATE CASCADE "+
+                    "ON DELETE CASCADE,"+
+                    "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                    ");");
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS enrollment(section_id INTEGER NOT NULL, " +
+                    "student_id INTEGER NOT NULL, " +
+                    "PRIMARY KEY(section_id,student_id), " +
+                    "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
+                    "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                    ");");
 
         }
         catch(Exception e){
