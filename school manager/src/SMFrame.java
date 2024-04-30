@@ -93,7 +93,7 @@ public class SMFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(700,800);
         setResizable(true);
-//        setAlwaysOnTop(true);
+        setAlwaysOnTop(true);
         setLayout(null);
 
         setJMenuBar(mb);
@@ -962,6 +962,16 @@ public class SMFrame extends JFrame {
                 e.printStackTrace();
             }
         }
+        ArrayList<Teacher> t = sql.getTeacherList();
+        boolean exists = false;
+        for(int i = 0;i<t.size();i++){
+            if(t.get(i).getId()==-1){
+                exists = true;
+            }
+        }
+        if(!exists){
+            sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
+        }
     }
     public void exportAction(){
         PrintWriter out = null;
@@ -1068,6 +1078,16 @@ public class SMFrame extends JFrame {
                     "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
                     "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                     ");");
+            ArrayList<Teacher> t = sql.getTeacherList();
+            boolean exists = false;
+            for(int i = 0;i<t.size();i++){
+                if(t.get(i).getId()==-1){
+                    exists = true;
+                }
+            }
+            if(!exists){
+                sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
+            }
 
         }
         catch(Exception e){
