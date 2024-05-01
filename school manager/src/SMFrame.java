@@ -192,10 +192,10 @@ public class SMFrame extends JFrame {
         add(secscroll);
         courseBox.setBounds(350,30,300,30);
         add(courseBox);
-        ArrayList<Course> c = sql.getCourseList();
-        for(int i = 0; i<c.size();i++){
-            courseBox.addItem(c.get(i));
-        }
+//        ArrayList<Course> c = sql.getCourseList();
+//        for(int i = 0; i<c.size();i++){
+//            courseBox.addItem(c.get(i));
+//        }
         courseSectLabel.setBounds(220,30,150,30);
         add(courseSectLabel);
         teachersInSecLabel.setBounds(220,180,150,30);
@@ -271,37 +271,37 @@ public class SMFrame extends JFrame {
 //        sql.writeStatement("DROP TABLE IF EXISTS courses;");
 //        sql.writeStatement("DROP TABLE IF EXISTS students;");
 //        sql.writeStatement("DROP TABLE IF EXISTS teachers;"); folds everything
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS teacher(" +
                 "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
                 "first_name TEXT NOT NULL," +
                 "last_name TEXT NOT NULL," +
                 "PRIMARY KEY(teacher_id)" +
                 ");");
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS students(" +
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS student(" +
                 "student_id INTEGER NOT NULL AUTO_INCREMENT," +
                 "first_name TEXT NOT NULL," +
                 "last_name TEXT NOT NULL," +
                 "PRIMARY KEY(student_id));");
 
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS courses(" +
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS course(" +
                 "course_id INTEGER NOT NULL AUTO_INCREMENT," +
-                "name TEXT NOT NULL," +
+                "title TEXT NOT NULL," +
                 "type TEXT NOT NULL," +
                 "PRIMARY KEY(course_id));");
         sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO_INCREMENT,"+
                 "course_id INTEGER NOT NULL,"+
                 "teacher_id INTEGER NOT NULL,"+
                 "PRIMARY KEY(section_id),"+
-                "FOREIGN KEY(course_id) REFERENCES courses(course_id) "+
+                "FOREIGN KEY(course_id) REFERENCES course(course_id) "+
                 "ON UPDATE CASCADE "+
                 "ON DELETE CASCADE,"+
-                "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                "FOREIGN KEY(teacher_id) REFERENCES teacher(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
         sql.writeStatement("CREATE TABLE IF NOT EXISTS enrollment(section_id INTEGER NOT NULL, " +
                 "student_id INTEGER NOT NULL, " +
                 "PRIMARY KEY(section_id,student_id), " +
                 "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
-                "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                "FOREIGN KEY(student_id) REFERENCES student(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
 
         ArrayList<Teacher> t = sql.getTeacherList();
@@ -312,7 +312,7 @@ public class SMFrame extends JFrame {
             }
         }
         if(!exists){
-            sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
+            sql.writeStatement("INSERT INTO teacher(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
         }
 
 //        sql.writeStatement("INSERT INTO teachers(first_name, last_name, sections) VALUES('testfn','testln','testsec');");
@@ -744,16 +744,16 @@ public class SMFrame extends JFrame {
             Teacher curr = (Teacher) teacherViewList.getSelectedValue();
             curr.setFn(fn.getText());
             curr.setLn(ln.getText());
-            sql.writeStatement("UPDATE teachers SET first_name='"+curr.getFn()+"' WHERE teacher_id="+curr.getId()+";");
-            sql.writeStatement("UPDATE teachers SET last_name='"+curr.getLn()+"' WHERE teacher_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE teacher SET first_name='"+curr.getFn()+"' WHERE teacher_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE teacher SET last_name='"+curr.getLn()+"' WHERE teacher_id="+curr.getId()+";");
             teacherView();
         }
         else if(cview.equals("students")){
             Student curr = (Student) studentViewList.getSelectedValue();
             curr.setFn(fn.getText());
             curr.setLn(ln.getText());
-            sql.writeStatement("UPDATE students SET first_name='"+curr.getFn()+"' WHERE student_id="+curr.getId()+";");
-            sql.writeStatement("UPDATE students SET last_name='"+curr.getLn()+"' WHERE student_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE student SET first_name='"+curr.getFn()+"' WHERE student_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE student SET last_name='"+curr.getLn()+"' WHERE student_id="+curr.getId()+";");
             studentView();
         }
         else if(cview.equals("courses")){
@@ -768,8 +768,8 @@ public class SMFrame extends JFrame {
             else if(courseTypeAP.isSelected()){
                 curr.setType(2);
             }
-            sql.writeStatement("UPDATE courses SET name='"+curr.getCn()+"' WHERE course_id="+curr.getId()+";");
-            sql.writeStatement("UPDATE courses SET type='"+curr.getType()+"' WHERE course_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE course SET title='"+curr.getCn()+"' WHERE course_id="+curr.getId()+";");
+            sql.writeStatement("UPDATE course SET type='"+curr.getType()+"' WHERE course_id="+curr.getId()+";");
             courseView();
 
 
@@ -793,13 +793,13 @@ public class SMFrame extends JFrame {
     public void saveEntry(){
         if(cview.equals("teachers")){
             if(!fn.getText().equals("")&&!ln.getText().equals("")) {
-                sql.writeStatement("INSERT INTO teachers(first_name, last_name) VALUES('" + fn.getText() + "','" + ln.getText() + "');");
+                sql.writeStatement("INSERT INTO teacher(first_name, last_name) VALUES('" + fn.getText() + "','" + ln.getText() + "');");
                 teacherView();
             }
         }
         else if(cview.equals("students")){
             if(!fn.getText().equals("")&&!ln.getText().equals("")){
-                sql.writeStatement("INSERT INTO students(first_name, last_name) VALUES('"+fn.getText()+"','"+ln.getText()+"');");
+                sql.writeStatement("INSERT INTO student(first_name, last_name) VALUES('"+fn.getText()+"','"+ln.getText()+"');");
                 studentView();
             }
 
@@ -815,7 +815,7 @@ public class SMFrame extends JFrame {
             if(courseTypeAP.isSelected()==true){
                 i=2;
             }
-            sql.writeStatement("INSERT INTO courses(name,type) VALUES('"+cn.getText()+"','"+i+"');");
+            sql.writeStatement("INSERT INTO course(title,type) VALUES('"+cn.getText()+"','"+i+"');");
             courseView();
         }
 
@@ -826,15 +826,15 @@ public class SMFrame extends JFrame {
             for(int i = 0;i<staught.size();i++){
                 sql.writeStatement("UPDATE section SET teacher_id=-1 WHERE section_id="+staught.get(i).getId()+";");
             }
-            sql.writeStatement("DELETE FROM teachers WHERE teacher_id="+id.getText());
+            sql.writeStatement("DELETE FROM teacher WHERE teacher_id="+id.getText());
             teacherView();
         }
         else if(cview.equals("students")){
-            sql.writeStatement("DELETE FROM students WHERE student_id="+id.getText());
+            sql.writeStatement("DELETE FROM student WHERE student_id="+id.getText());
             studentView();
         }
         else if(cview.equals("courses")){
-            sql.writeStatement("DELETE FROM courses WHERE course_id="+id.getText());
+            sql.writeStatement("DELETE FROM course WHERE course_id="+id.getText());
             courseView();
         }
     }
@@ -861,41 +861,41 @@ public class SMFrame extends JFrame {
     public void importAction(){
         sql.writeStatement("DROP TABLE IF EXISTS enrollment");
         sql.writeStatement("DROP TABLE IF EXISTS section;");
-        sql.writeStatement("DROP TABLE IF EXISTS students;");
-        sql.writeStatement("DROP TABLE IF EXISTS teachers;");
-        sql.writeStatement("DROP TABLE IF EXISTS courses;");
+        sql.writeStatement("DROP TABLE IF EXISTS student;");
+        sql.writeStatement("DROP TABLE IF EXISTS teacher;");
+        sql.writeStatement("DROP TABLE IF EXISTS course;");
 
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS teacher(" +
                 "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
                 "first_name TEXT NOT NULL," +
                 "last_name TEXT NOT NULL," +
                 "PRIMARY KEY(teacher_id)" +
                 ");");
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS students(" +
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS student(" +
                 "student_id INTEGER NOT NULL AUTO_INCREMENT," +
                 "first_name TEXT NOT NULL," +
                 "last_name TEXT NOT NULL," +
                 "PRIMARY KEY(student_id));");
 
-        sql.writeStatement("CREATE TABLE IF NOT EXISTS courses(" +
+        sql.writeStatement("CREATE TABLE IF NOT EXISTS course(" +
                 "course_id INTEGER NOT NULL AUTO_INCREMENT," +
-                "name TEXT NOT NULL," +
+                "title TEXT NOT NULL," +
                 "type TEXT NOT NULL," +
                 "PRIMARY KEY(course_id));");
         sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO_INCREMENT,"+
                 "course_id INTEGER NOT NULL,"+
                 "teacher_id INTEGER NOT NULL,"+
                 "PRIMARY KEY(section_id),"+
-                "FOREIGN KEY(course_id) REFERENCES courses(course_id) "+
+                "FOREIGN KEY(course_id) REFERENCES course(course_id) "+
                 "ON UPDATE CASCADE "+
                 "ON DELETE CASCADE,"+
-                "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                "FOREIGN KEY(teacher_id) REFERENCES teacher(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
         sql.writeStatement("CREATE TABLE IF NOT EXISTS enrollment(section_id INTEGER NOT NULL, " +
                 "student_id INTEGER NOT NULL, " +
                 "PRIMARY KEY(section_id,student_id), " +
                 "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
-                "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                "FOREIGN KEY(student_id) REFERENCES student(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                 ");");
 
         JFileChooser fileChooser = new JFileChooser();
@@ -907,19 +907,19 @@ public class SMFrame extends JFrame {
                 egg.nextLine();
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
-                    if(line.contains("Teachers")){
+                    if(line.contains("Teacher")){
                         break;
                     }
                     String[] array = line.split(", ");
-                    sql.writeStatement("INSERT INTO students(student_id,first_name,last_name) values ("+array[0]+",'"+array[1]+"','"+array[2]+"');");
+                    sql.writeStatement("INSERT INTO student(student_id,first_name,last_name) values ("+array[0]+",'"+array[1]+"','"+array[2]+"');");
                 }
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
-                    if(line.contains("Courses")){
+                    if(line.contains("Course")){
                         break;
                     }
                     String[] array = line.split(", ");
-                    sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) values ("+array[0]+",'"+array[1]+"','"+array[2]+"');");
+                    sql.writeStatement("INSERT INTO teacher(teacher_id,first_name,last_name) values ("+array[0]+",'"+array[1]+"','"+array[2]+"');");
                 }
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
@@ -928,7 +928,7 @@ public class SMFrame extends JFrame {
                     }
                     String[] array = line.split(", ");
                     System.out.println(array.length);
-                    sql.writeStatement("INSERT INTO courses(course_id,name,type) values ("+array[0]+",'"+array[1]+"',"+array[2]+");");
+                    sql.writeStatement("INSERT INTO course(course_id,name,type) values ("+array[0]+",'"+array[1]+"',"+array[2]+");");
                 }
                 while(egg.hasNextLine()){
                     String line = egg.nextLine();
@@ -970,7 +970,7 @@ public class SMFrame extends JFrame {
             }
         }
         if(!exists){
-            sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
+            sql.writeStatement("INSERT INTO teacher(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
         }
     }
     public void exportAction(){
@@ -983,8 +983,8 @@ public class SMFrame extends JFrame {
         }
 
         try{
-            ResultSet students = sql.snQueryEx("students");
-            out.println("Students");
+            ResultSet students = sql.snQueryEx("student");
+            out.println("Student");
             while(students!=null&&students.next()){
                 out.println(students.getInt("student_id")+", "+students.getString("first_name")+", "+students.getString("last_name"));
             }
@@ -994,8 +994,8 @@ public class SMFrame extends JFrame {
         }
 
         try{
-            ResultSet teachers = sql.snQueryEx("teachers");
-            out.println("Teachers");
+            ResultSet teachers = sql.snQueryEx("teacher");
+            out.println("Teacher");
             while(teachers!=null&&teachers.next()){
                 out.println(teachers.getInt("teacher_id")+", "+teachers.getString("first_name")+", "+teachers.getString("last_name"));
             }
@@ -1005,10 +1005,10 @@ public class SMFrame extends JFrame {
         }
 
         try{
-            ResultSet course = sql.snQueryEx("courses");
-            out.println("Courses");
+            ResultSet course = sql.snQueryEx("course");
+            out.println("Course");
             while(course!=null&&course.next()){
-                out.println(course.getInt("course_id")+", "+course.getString("name")+", "+course.getInt("type"));
+                out.println(course.getInt("course_id")+", "+course.getString("type")+", "+course.getInt("type"));
             }
         }
         catch(Exception e){
@@ -1043,40 +1043,40 @@ public class SMFrame extends JFrame {
         try{
             sql.writeStatement("DROP TABLE IF EXISTS enrollment");
             sql.writeStatement("DROP TABLE IF EXISTS section;");
-            sql.writeStatement("DROP TABLE IF EXISTS students;");
-            sql.writeStatement("DROP TABLE IF EXISTS teachers;");
-            sql.writeStatement("DROP TABLE IF EXISTS courses;");
-            sql.writeStatement("CREATE TABLE IF NOT EXISTS teachers(" +
+            sql.writeStatement("DROP TABLE IF EXISTS student;");
+            sql.writeStatement("DROP TABLE IF EXISTS teacher;");
+            sql.writeStatement("DROP TABLE IF EXISTS course;");
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS teacher(" +
                     "teacher_id INTEGER NOT NULL AUTO_INCREMENT," +
                     "first_name TEXT NOT NULL," +
                     "last_name TEXT NOT NULL," +
                     "PRIMARY KEY(teacher_id)" +
                     ");");
-            sql.writeStatement("CREATE TABLE IF NOT EXISTS students(" +
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS student(" +
                     "student_id INTEGER NOT NULL AUTO_INCREMENT," +
                     "first_name TEXT NOT NULL," +
                     "last_name TEXT NOT NULL," +
                     "PRIMARY KEY(student_id));");
 
-            sql.writeStatement("CREATE TABLE IF NOT EXISTS courses(" +
+            sql.writeStatement("CREATE TABLE IF NOT EXISTS course(" +
                     "course_id INTEGER NOT NULL AUTO_INCREMENT," +
-                    "name TEXT NOT NULL," +
+                    "title TEXT NOT NULL," +
                     "type TEXT NOT NULL," +
                     "PRIMARY KEY(course_id));");
             sql.writeStatement("CREATE TABLE IF NOT EXISTS section(section_id INTEGER NOT NULL AUTO_INCREMENT,"+
                     "course_id INTEGER NOT NULL,"+
                     "teacher_id INTEGER NOT NULL,"+
                     "PRIMARY KEY(section_id),"+
-                    "FOREIGN KEY(course_id) REFERENCES courses(course_id) "+
+                    "FOREIGN KEY(course_id) REFERENCES course(course_id) "+
                     "ON UPDATE CASCADE "+
                     "ON DELETE CASCADE,"+
-                    "FOREIGN KEY(teacher_id) REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                    "FOREIGN KEY(teacher_id) REFERENCES teacher(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                     ");");
             sql.writeStatement("CREATE TABLE IF NOT EXISTS enrollment(section_id INTEGER NOT NULL, " +
                     "student_id INTEGER NOT NULL, " +
                     "PRIMARY KEY(section_id,student_id), " +
                     "FOREIGN KEY(section_id) REFERENCES section(section_id) ON UPDATE CASCADE ON DELETE CASCADE," +
-                    "FOREIGN KEY(student_id) REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
+                    "FOREIGN KEY(student_id) REFERENCES student(student_id) ON UPDATE CASCADE ON DELETE CASCADE" +
                     ");");
             ArrayList<Teacher> t = sql.getTeacherList();
             boolean exists = false;
@@ -1086,7 +1086,7 @@ public class SMFrame extends JFrame {
                 }
             }
             if(!exists){
-                sql.writeStatement("INSERT INTO teachers(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
+                sql.writeStatement("INSERT INTO teacher(teacher_id,first_name,last_name) VALUES(-1,'No','Teacher');");
             }
 
         }

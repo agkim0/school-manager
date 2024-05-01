@@ -32,7 +32,7 @@ public class sqlConnection {
         ArrayList<Teacher> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT * FROM teachers;");
+            ResultSet rs= st.executeQuery("SELECT * FROM teacher;");
             int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {
@@ -51,7 +51,7 @@ public class sqlConnection {
         ArrayList<Student> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT * FROM students;");
+            ResultSet rs= st.executeQuery("SELECT * FROM student;");
             int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {
@@ -70,11 +70,11 @@ public class sqlConnection {
         ArrayList<Course> list = new ArrayList<>();
         try{
             Statement st = connect.createStatement();
-            ResultSet rs= st.executeQuery("SELECT * FROM courses;");
+            ResultSet rs= st.executeQuery("SELECT * FROM course;");
             int i = 1;
             while(!rs.equals(null)&&rs.next()){
                 try {
-                    list.add(new Course(rs.getInt("course_id"),rs.getString("name"),rs.getInt("type")));
+                    list.add(new Course(rs.getInt("course_id"),rs.getString("title"),rs.getInt("type")));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

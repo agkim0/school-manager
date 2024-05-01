@@ -1,14 +1,14 @@
-Students
+Student
 1, Jane, Doe
 2, Billy, Smith
-Teachers
+Teacher
 -1, No, Teacher
 1, Jason, Tully
 2, Sarah, Bauguss
-Courses
-1, Data Structures, 1
-2, Computer Science A, 2
-3, Computer Science I, 0
+Course
+1, 1, 1
+2, 2, 2
+3, 0, 0
 Section
 1, 1, 2
 2, 2, 1
